@@ -69,7 +69,7 @@ class QueryBuilder
         return $this;
     }
 
-    public function orWhere($column,  $operator, $value)
+    public function orWhere($column, $operator, $value)
     {
         $this->query .= " OR (`$column` $operator :$column) ";
 
@@ -97,6 +97,7 @@ class QueryBuilder
 
     public function values(array $values): static
     {
+        //TODO: implement better way of insert in to db
         if (!is_array($values[0])) {
             array_map(function ($value) {
                 return $this->bindParams[':' . $value] = $value;

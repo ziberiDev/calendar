@@ -7,6 +7,13 @@ require_once './vendor/autoload.php';
 
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->safeLoad();
+//var_dump(range( 2021, 2031));
+//var_dump(cal_days_in_month(CAL_GREGORIAN , 2 , 2019));//get days of given month of a given year
+$date = new DateTime();
+
+//var_dump($date->format('l'));//get the day in string ex:Friday
+
+/*var_dump(date('Y'));*/
 
 
 try {
@@ -15,6 +22,7 @@ try {
 } catch (Throwable $th) {
     echo $th->getMessage();
 }
+
 
 
 

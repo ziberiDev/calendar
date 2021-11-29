@@ -8,6 +8,7 @@
     "php": "^8.0",
     "vlucas/phpdotenv": "^5.3",
     "ext-pdo": "*",
-    "jenssegers/blade": "^1.4"
+    "jenssegers/blade": "^1.4",
+    "ext-calendar": "*"
   }
 }

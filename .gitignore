@@ -4,4 +4,6 @@
 /.env
 /cache/
 /.idea/
-/App/Controllers/UserController.php
+/App/Controllers/CalendarController.php
+/package-lock.json/
+/node_modules/

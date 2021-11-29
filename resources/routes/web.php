@@ -1,8 +1,8 @@
 <?php
 
-use App\Controllers\UserController;
+use App\Controllers\CalendarController;
 use App\Core\Router\Router;
 
 /** @var Router $router */
-$router->get("", controller: [UserController::class, 'index']);
-$router->get("new_route", controller: [UserController::class, 'new']);
+$router->get("", controller: [CalendarController::class, 'index']);
+$router->get("new_route", controller: [CalendarController::class, 'new']);
