@@ -40,8 +40,9 @@ class Calendar
 
     public function setEvents(Collection $events)
     {
+        foreach ($this->data as $day){
 
-
+        }
     }
 
     public function toJson()

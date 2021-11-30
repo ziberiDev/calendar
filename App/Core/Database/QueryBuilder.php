@@ -2,17 +2,16 @@
 
 namespace App\Core\Database;
 
+use App\Core\View\Collection;
 use PDO;
 
 
 class QueryBuilder
 {
-
     /**
      * @var PDO|null
      */
     public ?PDO $db;
-
 
     /**
      * @var
@@ -24,12 +23,10 @@ class QueryBuilder
      */
     public $bindParams = [];
 
-
     public function __construct()
     {
         $this->db = DBConnection::getInstance();
     }
-
 
     /**
      * @param string $columns
@@ -37,7 +34,6 @@ class QueryBuilder
      */
     public function select(string $columns = '*')
     {
-
         if (!isset($this->query)) {
             $this->query = "SELECT $columns FROM ";
             return $this;
@@ -46,22 +42,21 @@ class QueryBuilder
 
     /**
      * @param string $table
-     * @return $this
+     * @return self
      */
     public function from(string $table): self
     {
         $this->query .= "$table ";
-
         return $this;
     }
 
     /**
-     * @param $column
+     * @param string $column
      * @param string $operator
      * @param $value
-     * @return $this
+     * @return self
      */
-    public function where($column, $operator, $value): static
+    public function where(string $column, string $operator, $value): self
     {
         $this->query .= " WHERE `$column` $operator :$column ";
 
@@ -72,7 +67,6 @@ class QueryBuilder
     public function orWhere($column, $operator, $value)
     {
         $this->query .= " OR (`$column` $operator :$column) ";
-
         $this->bindParams[":$column"] = $value;
         return $this;
     }
@@ -88,6 +82,9 @@ class QueryBuilder
 
     public function insert(string $table, array $columns)
     {
+     /*   $db->insert('table', [
+            "column" => "value"
+        ]);*/
         $columns = implode(",", $columns);
 
         $this->query = "INSERT INTO $table  ($columns) ";
@@ -120,9 +117,9 @@ class QueryBuilder
 
 
     /**
-     * @return array|false|string
+     * @return string
      */
-    public function get(): bool|array|string
+    public function get(): Collection|string
     {
         if (!isset($this->query)) {
             echo "No QUERY";
@@ -130,7 +127,7 @@ class QueryBuilder
         try {
             $statement = $this->db->prepare($this->query);
             $statement->execute($this->bindParams ?? []);
-            return $statement->fetchAll(PDO::FETCH_CLASS);
+            return new Collection($statement->fetchAll(PDO::FETCH_CLASS));
         } catch (\Exception $e) {
             return $e->getMessage();
         }

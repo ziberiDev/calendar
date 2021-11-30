@@ -20,8 +20,8 @@ class Request extends Validator
     public static function uri(): string
     {
         return trim(
-                parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), "/"
-            );
+            parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), "/"
+        );
     }
 
     /**
@@ -44,6 +44,11 @@ class Request extends Validator
         foreach ($_POST as $key => $value) {
             $this->POST_PARAMS[$key] = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
         }
+    }
+
+    public function getParams()
+    {
+        return $this->GET_PARAMS ?? $this->POST_PARAMS;
     }
 
 }
