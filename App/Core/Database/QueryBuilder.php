@@ -5,7 +5,6 @@ namespace App\Core\Database;
 use App\Core\View\Collection;
 use PDO;
 
-
 class QueryBuilder
 {
     /**
@@ -13,15 +12,9 @@ class QueryBuilder
      */
     public ?PDO $db;
 
-    /**
-     * @var
-     */
-    public $query;
+    public string $query;
 
-    /**
-     * @var array
-     */
-    public $bindParams = [];
+    public array $bindParams = [];
 
     public function __construct()
     {
@@ -80,35 +73,38 @@ class QueryBuilder
     }
 
 
-    public function insert(string $table, array $columns)
+    public function insert(string $table, array $data)
     {
-     /*   $db->insert('table', [
-            "column" => "value"
-        ]);*/
-        $columns = implode(",", $columns);
 
-        $this->query = "INSERT INTO $table  ($columns) ";
+        $columns = count($data) == count($data, COUNT_RECURSIVE) ? array_keys($data) : array_keys($data[0]);
+        $values = count($data) == count($data, COUNT_RECURSIVE) ? array_values($data) : $data;
 
-        return $this;
+        $queryColumns = implode(', ', $columns);
+        $this->query = "INSERT INTO $table ($queryColumns) ";
+
+        return $this->values($columns, $values);
     }
 
-    public function values(array $values): static
+    protected function values($columns, array $values): static
     {
-        //TODO: implement better way of insert in to db
+
+
         if (!is_array($values[0])) {
-            array_map(function ($value) {
-                return $this->bindParams[':' . $value] = $value;
-            }, $values);
-            $values = implode(",:", $values);
-            $this->query .= "VALUES (:$values)";
+            array_map(function ($value, $column) {
+                return $this->bindParams[":" . $column . "1"] = $value;
+            }, $values, $columns);
+            $values = implode("1,:", $columns);
+            $this->query .= " VALUES ( :{$values}1);";
         } else {
             $this->query .= " VALUES ";
-            foreach ($values as $value) {
-                $prepareValues = implode(",:", $value);
-                array_map(function ($single) {
-                    return $this->bindParams[':' . $single] = $single;
+            $counter = 0;
+            foreach ($values as $key => $value) {
+                $prepareValues = implode($key . " ,", $columns) . $key;
+                array_map(function ($single) use ($key, $columns, &$counter) {
+                    return $this->bindParams[$key][":{$columns[$counter++]}$key"] = $single;
                 }, $value);
-                $a = !next($values) ? " (:$prepareValues);" : "(:$prepareValues),";
+                $counter = 0;
+                $a = !next($values) ? " (:$prepareValues);" : "(:$prepareValues) , ";
                 $this->query .= $a;
             }
         }
@@ -117,13 +113,10 @@ class QueryBuilder
 
 
     /**
-     * @return string
+     * @return string|Collection
      */
     public function get(): Collection|string
     {
-        if (!isset($this->query)) {
-            echo "No QUERY";
-        }
         try {
             $statement = $this->db->prepare($this->query);
             $statement->execute($this->bindParams ?? []);
@@ -135,9 +128,20 @@ class QueryBuilder
 
     public function execute()
     {
-        $statement = $this->db->prepare($this->query);
-        $statement->execute($this->bindParams ?? []);
-    }
 
+        // var_dump($this->query);
+        try {
+            $statement = $this->db->prepare($this->query);
+            foreach ($this->bindParams as $key => $value) {
+                $str = "first_name";
+                $statement->execute($value);
+            }
+
+
+        } catch (\PDOException $e) {
+            var_dump($e->getMessage());
+        }
+        //var_dump($this->query);
+    }
 
 }

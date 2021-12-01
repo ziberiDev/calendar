@@ -6,8 +6,6 @@ use PDO;
 
 class DBConnection
 {
-
-
     /**
      * @var PDO|null
      */
@@ -18,7 +16,8 @@ class DBConnection
         self::$instance = new PDO(
             "mysql:dbname={$_ENV['DB_NAME']};host={$_ENV['DB_HOST']}",
             "{$_ENV['DB_USER']}",
-            "{$_ENV['DB_PASSWORD']}"
+            "{$_ENV['DB_PASSWORD']}",
+            [PDO::ERRMODE_EXCEPTION]
         );
     }
 
@@ -29,5 +28,4 @@ class DBConnection
         }
         return self::$instance;
     }
-
 }
