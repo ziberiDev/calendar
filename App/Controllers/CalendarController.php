@@ -4,8 +4,6 @@ namespace App\Controllers;
 
 use App\Core\Calendar;
 use App\Core\Database\QueryBuilder;
-use Illuminate\Support\Facades\DB;
-use JetBrains\PhpStorm\Pure;
 
 class CalendarController extends Controller
 {
@@ -20,26 +18,10 @@ class CalendarController extends Controller
     public function index()
     {
         $db = new QueryBuilder();
-        $db->insert('users', [
-            [
-                'first_name' => 'ajkna',
-                'last_name' => 'asd',
-                'password' => 'asd',
-                'email' => "denis@test.com"
-            ],
-            [
-                'first_name' => 'ajkna',
-                'last_name' => 'asdaaaaa',
-                'password' => 'asd',
-                'email' => "denis@test.com"
-            ],
-            [
-                'first_name' => 'ajkna',
-                'last_name' => 'denis',
-                'password' => 'asd',
-                'email' => "denis@test.com"
-            ]
-        ])->execute();
+        $users = $db->select('id')->from('users')->get();
+        var_dump($users);
+        $db->insert('events', [
+            'user_id' => 1, 'date' => "2021-11-11 10:00:00"])->execute();
         echo "<pre>";
         $this->calendar->initializeFromDate("2021-12");
         $this->calendar->renderDays();

@@ -52,7 +52,6 @@ class QueryBuilder
     public function where(string $column, string $operator, $value): self
     {
         $this->query .= " WHERE `$column` $operator :$column ";
-
         $this->bindParams[":$column"] = $value;
         return $this;
     }
@@ -67,7 +66,6 @@ class QueryBuilder
     public function andWhere($column, $operator, $value)
     {
         $this->query .= " AND (`$column` $operator :$column) ";
-
         $this->bindParams[":$column"] = $value;
         return $this;
     }
@@ -75,7 +73,6 @@ class QueryBuilder
 
     public function insert(string $table, array $data)
     {
-
         $columns = count($data) == count($data, COUNT_RECURSIVE) ? array_keys($data) : array_keys($data[0]);
         $values = count($data) == count($data, COUNT_RECURSIVE) ? array_values($data) : $data;
 
@@ -87,11 +84,9 @@ class QueryBuilder
 
     protected function values($columns, array $values): static
     {
-
-
         if (!is_array($values[0])) {
             array_map(function ($value, $column) {
-                return $this->bindParams[":" . $column . "1"] = $value;
+                return $this->bindParams[][":" . $column . "1"] = $value;
             }, $values, $columns);
             $values = implode("1,:", $columns);
             $this->query .= " VALUES ( :{$values}1);";
@@ -99,18 +94,17 @@ class QueryBuilder
             $this->query .= " VALUES ";
             $counter = 0;
             foreach ($values as $key => $value) {
-                $prepareValues = implode($key . " ,", $columns) . $key;
+                $prepareValues = implode("$key ,:", $columns) . $key;
                 array_map(function ($single) use ($key, $columns, &$counter) {
                     return $this->bindParams[$key][":{$columns[$counter++]}$key"] = $single;
                 }, $value);
                 $counter = 0;
-                $a = !next($values) ? " (:$prepareValues);" : "(:$prepareValues) , ";
+                $a = !next($values) ? " (:$prepareValues);" : " (:$prepareValues),";
                 $this->query .= $a;
             }
         }
         return $this;
     }
-
 
     /**
      * @return string|Collection
@@ -129,19 +123,22 @@ class QueryBuilder
     public function execute()
     {
 
-        // var_dump($this->query);
         try {
+
             $statement = $this->db->prepare($this->query);
-            foreach ($this->bindParams as $key => $value) {
-                $str = "first_name";
-                $statement->execute($value);
+            var_dump($statement->queryString);
+            foreach ($this->bindParams as $key => $bindParam) {
+                foreach ($bindParam as $key1 => $value) {
+                    $param = is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR;
+                    var_dump($value, $param);
+                    $statement->bindParam($key1, $value , $param);
+
+                }
+
             }
-
-
+            $statement->execute();
         } catch (\PDOException $e) {
             var_dump($e->getMessage());
         }
-        //var_dump($this->query);
     }
-
 }
