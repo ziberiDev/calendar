@@ -11,15 +11,15 @@ $dotenv->safeLoad();
 //var_dump(cal_days_in_month(CAL_GREGORIAN , 2 , 2019));//get days of given month of a given year
 $date = new DateTime();
 
-//var_dump($date->format('l'));//get the day in string ex:Friday
-
-/*var_dump(date('Y'));*/
-
+$session = new \App\Core\Session\Session();
+$session->start();
 
 try {
+
     Router::loadWebRoutes()
         ->direct(Request::uri(), Request::method());
 } catch (Throwable $th) {
+    var_dump(Request::uri());
     echo $th->getMessage();
 }
 

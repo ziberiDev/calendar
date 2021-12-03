@@ -9,25 +9,26 @@ class Validator
      */
     protected array $rules = [];
 
-    /**
-     * @var array $inputs
-     */
-    protected array $inputs = parent::GET_PARAMS ?? parent::POST_PARAMS;
+    protected $inputs;
 
     /**
      * @var array $messages
      */
     protected array $messages = [];
 
+
     /**
-     * @param array $inputs
      * @param array $rules
      */
     public function validate(array $rules)
     {
+        //TODO:ask about polymorphic call
+        $this->inputs = $this->getParams();
+
         $this->setRules($this->inputs, $rules);
 
         foreach ($this->inputs as $input => $inputValue) {
+
             foreach ($this->rules[$input] as $method => $checkValue) {
                 $this->$method(
                     inputValue: $inputValue,
@@ -36,13 +37,11 @@ class Validator
                 );
             }
         }
+
+        return $this;
     }
 
-    /**
-     * @param array $inputs
-     * @param array $rules
-     */
-    protected function setRules(array $inputs, array $rules)
+    protected function setRules($inputs, array $rules)
     {
         foreach ($inputs as $input => $inputValue) {
             if (array_key_exists($input, $rules)) {
@@ -105,6 +104,12 @@ class Validator
         }
     }
 
+    public function email(string|int $inputValue, string $input, string|int $checkValue = 0)
+    {
+        if (!filter_var($inputValue, FILTER_VALIDATE_EMAIL)) {
+            $this->messages[$input][] = "The {$input} must be a valid email";
+        }
+    }
 
     /**
      * @return bool
@@ -124,7 +129,7 @@ class Validator
     public function getMessages(): array|bool
     {
         if (!empty($this->messages)) {
-            return $this->messages;
+            return ['errors' => $this->messages];
         }
         return false; // exception
     }

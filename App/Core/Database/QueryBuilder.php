@@ -4,19 +4,21 @@ namespace App\Core\Database;
 
 use App\Core\View\Collection;
 use PDO;
+use stdClass;
 
-class QueryBuilder
+trait QueryBuilder
 {
     /**
      * @var PDO|null
      */
     public ?PDO $db;
 
+
     public string $query;
 
     public array $bindParams = [];
 
-    public function __construct()
+    public function __QueryBuilderConstruct()
     {
         $this->db = DBConnection::getInstance();
     }
@@ -107,14 +109,21 @@ class QueryBuilder
     }
 
     /**
-     * @return string|Collection
+     * @return Collection|string|stdClass
      */
-    public function get(): Collection|string
+    public function get(): Collection|string|stdClass
     {
         try {
             $statement = $this->db->prepare($this->query);
             $statement->execute($this->bindParams ?? []);
-            return new Collection($statement->fetchAll(PDO::FETCH_CLASS));
+            $data = $statement->fetchAll(PDO::FETCH_CLASS);
+            if (count($data) > 1) {
+                return new Collection($data);
+            } elseif ($data) {
+                return $data[0];
+            }
+            return false;
+
         } catch (\Exception $e) {
             return $e->getMessage();
         }
@@ -126,12 +135,11 @@ class QueryBuilder
         try {
 
             $statement = $this->db->prepare($this->query);
-            var_dump($statement->queryString);
-            foreach ($this->bindParams as $key => $bindParam) {
-                foreach ($bindParam as $key1 => $value) {
+
+            foreach ($this->bindParams as $bindParam) {
+                foreach ($bindParam as $key => $value) {
                     $param = is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR;
-                    var_dump($value, $param);
-                    $statement->bindParam($key1, $value , $param);
+                    $statement->bindValue($key, $value, $param);
 
                 }
 

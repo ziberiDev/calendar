@@ -2,16 +2,21 @@
 
 namespace App\Core\Request;
 
+use stdClass;
+
 class Request extends Validator
 {
-    protected $GET_PARAMS = [];
+    protected stdClass $GET_PARAMS;
 
-    protected $POST_PARAMS = [];
+    protected stdClass $POST_PARAMS;
+
+    protected stdClass $stdClass;
 
     public function __construct()
     {
+        $this->stdClass = new stdClass();
         $this->setGetParams();
-        $this->setGetParams();
+        $this->setPostParams();
     }
 
     /**
@@ -34,16 +39,21 @@ class Request extends Validator
 
     protected function setGetParams()
     {
+        if (!$_GET) return;
         foreach ($_GET as $key => $value) {
-            $this->GET_PARAMS[$key] = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+            $this->stdClass->{$key} = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
         }
+        $this->GET_PARAMS = $this->stdClass;
     }
 
     protected function setPostParams()
     {
+        if (!$_POST) return;
         foreach ($_POST as $key => $value) {
-            $this->POST_PARAMS[$key] = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+            $this->stdClass->{$key} = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
         }
+        $this->POST_PARAMS = $this->stdClass;
+
     }
 
     public function getParams()
