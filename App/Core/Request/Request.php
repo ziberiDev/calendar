@@ -14,6 +14,7 @@ class Request extends Validator
 
     public function __construct()
     {
+        parent::__construct();
         $this->stdClass = new stdClass();
         $this->setGetParams();
         $this->setPostParams();

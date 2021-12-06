@@ -2,8 +2,12 @@
 
 namespace App\Core\Request;
 
+use App\Core\Database\QueryBuilder;
+
 class Validator
 {
+    use QueryBuilder;
+
     /**
      * @var array $rules
      */
@@ -16,6 +20,11 @@ class Validator
      */
     protected array $messages = [];
 
+
+    public function __construct()
+    {
+        $this->__QueryBuilderConstruct();
+    }
 
     /**
      * @param array $rules
@@ -111,15 +120,31 @@ class Validator
         }
     }
 
+    public function regex(string $inputValue, string $input, string|int $checkValue = 0)
+    {
+        if (!preg_match("$checkValue", $inputValue)) {
+            $this->messages[$input][] = "The {$input} doesn't meet the requirements.";
+        }
+    }
+
+    public function exists(string $inputValue, string $input, string|int $checkValue = 0)
+    {
+
+        $emails = $this->select($input)->from($checkValue)->where($input, '=' , $inputValue)->get();
+
+        if ($emails) {
+            $this->messages[$input][] = "The {$input} already exists.";
+        }
+    }
+
     /**
      * @return bool
      */
     public function isValid(): bool
     {
-        if (empty($this->messages)) {
+        if (!empty($this->messages)) {
             return false;
         }
-
         return true;
     }
 
@@ -129,7 +154,7 @@ class Validator
     public function getMessages(): array|bool
     {
         if (!empty($this->messages)) {
-            return ['errors' => $this->messages];
+            return $this->messages;
         }
         return false; // exception
     }

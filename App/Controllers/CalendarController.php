@@ -3,7 +3,6 @@
 namespace App\Controllers;
 
 use App\Core\Calendar;
-use App\Core\Database\QueryBuilder;
 
 class CalendarController extends Controller
 {
@@ -26,6 +25,6 @@ class CalendarController extends Controller
         $daysOfWeek = $this->calendar->daysOfWeek;
 //        $this->calendar->toJson();
         echo "</pre>";
-        /*return $this->renderView('homepage.index', ['daysOfWeek' => $daysOfWeek]);*/
+        /*return $this->renderView('auth.index', ['daysOfWeek' => $daysOfWeek]);*/
     }
 }

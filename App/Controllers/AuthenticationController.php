@@ -4,15 +4,23 @@ namespace App\Controllers;
 
 use App\Core\Request\Request;
 use App\Core\Session\Session;
-use Carbon\Carbon;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\MessageBag;
 
 
 class AuthenticationController extends Controller
 {
     public function index()
     {
-        return $this->renderView('homepage.index');
+        return $this->renderView('auth.login');
     }
+
+    public function registerForm()
+    {
+        return $this->renderView('auth.register');
+    }
+
 
     public function login()
     {
@@ -23,12 +31,40 @@ class AuthenticationController extends Controller
             'password' => 'required'
         ]);
 
-        if ($this->authenticate($request)) {
-            return $this->renderView('dashboard.index.com');
+        if (!$validation->isValid()) {
+
+            Session::flush('errors', $validation->getMessages());
+            header("location:/");
+            die();
         }
 
-        //TODO: implement redirect method figure out to pass error messages in session and delete them on print
-        return $this->renderView('homepage.index', $validation->getMessages());
+        if ($this->authenticate($request)) {
+
+            header("Location:dashboard");
+            die();
+        }
+
+        Session::flush('authError', ['Credentials dont mach']);
+
+        header("location:/");
+        die();
+    }
+
+    public function register()
+    {
+        $request = new Request();
+
+        $validation = $request->validate([
+            'email' => 'required|email|exists:users',
+            'password' => 'required|min:8|regex:^\S*(?=\S*[a-z])(?=\S*[A-Z])(?=\S*[\d])\S*$^',
+            'name' => 'required|min:3|max:10',
+            'last_name' => 'required|min:3|max:10'
+        ]);
+        Session::flush('errors', $validation->getMessages());
+        Session::flush('old', $request->getParams());
+        return header('Location:register');
+
+
     }
 
 

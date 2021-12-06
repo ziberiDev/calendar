@@ -2,6 +2,7 @@
 
 namespace App\Core\View;
 
+use Illuminate\Container\Container;
 use Jenssegers\Blade\Blade;
 
 class View
