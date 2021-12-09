@@ -3,6 +3,8 @@
 namespace App\Controllers;
 
 use App\Core\Calendar;
+use App\Core\Request\Request;
+use App\Core\Session\Session;
 
 class CalendarController extends Controller
 {
@@ -14,17 +16,21 @@ class CalendarController extends Controller
         $this->calendar = new Calendar();
     }
 
-    public function index()
+    public function authUserCalendar()
     {
+        $request = new Request();
+        $events = $this->select()->from('events')
+            ->where('user_id', '=', Session::get('user')->id)
+            ->andWhere('event_date', "LIKE", "%{$request->getParams()->date}%")
+            ->get();
 
-
-
-        echo "<pre>";
-        $this->calendar->initializeFromDate("2021-12");
+        $this->calendar->initializeFromDate($request->getParams()->date);
         $this->calendar->renderDays();
-        $daysOfWeek = $this->calendar->daysOfWeek;
-//        $this->calendar->toJson();
-        echo "</pre>";
+
+        $this->calendar->setEvents($events);
+
+        return $this->calendar->toJson();
+
         /*return $this->renderView('auth.index', ['daysOfWeek' => $daysOfWeek]);*/
     }
 }

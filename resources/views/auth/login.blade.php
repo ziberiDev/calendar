@@ -5,12 +5,12 @@
         use App\Core\Session\Session;
     @endphp
     <div class="container">
-
         <div class="row vh-100  align-content-center">
-            @if(Session::get('authError') !== null)
+            @if(Session::getFlashed('authError') !== null)
                 <div class="col-12">
-                    <div class="alert alert-danger" role="alert">
-                        {{Session::get('authError')[0] }}
+                    <div class="alert alert-danger alert-dismissible" role="alert">
+                        {{Session::getFlashed('authError')[0] }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 </div>
             @endif
@@ -24,9 +24,13 @@
                         <div class="col-12 mb-3">
                             <label for="email" class="form-label">Email</label>
                             <input id="email" type="email" name="email" class="form-control" placeholder="email">
-                            @if (Session::get('errors') !== null && isset(Session::get('errors')['email']) )
-                                @foreach(Session::get('errors')['email'] as $message)
-                                    {{ $message }}
+                            @if ($session::getFlashed('errors') !== null && isset(Session::getFlashed('errors')['email']) )
+                                @foreach(Session::getFlashed('errors')['email'] as $message)
+                                    <div class="alert alert-danger alert-dismissible p-1" role="alert">
+                                        {{ $message }}
+                                        <button type="button" class="btn-close btn-sm" data-bs-dismiss="alert"
+                                                aria-label="Close"></button>
+                                    </div>
                                 @endforeach
                             @endif
                         </div>
@@ -34,9 +38,13 @@
                             <label for="password" class="form-label">Password</label>
                             <input id="password" type="password" name="password" class="form-control"
                                    placeholder="Password">
-                            @if (Session::get('errors') !== null && isset(Session::get('errors')['password']))
-                                @foreach(Session::get('errors')['password'] as $message)
-                                    {{$message}}
+                            @if (Session::getFlashed('errors') !== null && isset(Session::getFlashed('errors')['password']))
+                                @foreach(Session::getFlashed('errors')['password'] as $message)
+                                    <div class="alert alert-danger alert-dismissible p-1" role="alert">
+                                        {{ $message }}
+                                        <button type="button" class="btn-close btn-sm" data-bs-dismiss="alert"
+                                                aria-label="Close"></button>
+                                    </div>
                                 @endforeach
                             @endif
                         </div>

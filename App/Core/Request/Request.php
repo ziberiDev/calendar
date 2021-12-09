@@ -6,9 +6,9 @@ use stdClass;
 
 class Request extends Validator
 {
-    protected stdClass $GET_PARAMS;
+    public stdClass $GET_PARAMS;
 
-    protected stdClass $POST_PARAMS;
+    public stdClass $POST_PARAMS;
 
     protected stdClass $stdClass;
 

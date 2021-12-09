@@ -2,22 +2,32 @@
 
 namespace App\Controllers;
 
+use App\Core\Authentication\Authentication;
+use App\Core\Helpers\Redirect;
 use App\Core\Request\Request;
 use App\Core\Session\Session;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\MessageBag;
 
 
 class AuthenticationController extends Controller
 {
+    use Authentication;
+
+    public function __construct()
+    {
+        //Check if user exists in session
+        if (Session::get('user')) Redirect::to('/');
+        parent::__construct();
+        $this->__AuthenticationConstruct();
+    }
+
     public function index()
     {
-        return $this->renderView('auth.login');
+        return $this->renderView('auth.login', ['session' => Session::class]);
     }
 
     public function registerForm()
     {
+
         return $this->renderView('auth.register');
     }
 
@@ -25,29 +35,22 @@ class AuthenticationController extends Controller
     public function login()
     {
         $request = new Request();
-
         $validation = $request->validate([
             'email' => 'required|email',
             'password' => 'required'
         ]);
-
         if (!$validation->isValid()) {
-
-            Session::flush('errors', $validation->getMessages());
-            header("location:/");
+            Session::flash('errors', $validation->getMessages());
+            Redirect::to("login");
             die();
         }
-
         if ($this->authenticate($request)) {
-
-            header("Location:dashboard");
+            Redirect::to('/');
             die();
         }
+        Session::flash('authError', ['Credentials dont mach']);
+        Redirect::to('login');
 
-        Session::flush('authError', ['Credentials dont mach']);
-
-        header("location:/");
-        die();
     }
 
     public function register()
@@ -60,12 +63,11 @@ class AuthenticationController extends Controller
             'name' => 'required|min:3|max:10',
             'last_name' => 'required|min:3|max:10'
         ]);
-        Session::flush('errors', $validation->getMessages());
-        Session::flush('old', $request->getParams());
-        return header('Location:register');
-
-
+        if (!$validation->isValid()) {
+            Session::flash('errors', $validation->getMessages());
+        } elseif ($this->performRegistration($request)) {
+            Redirect::to('/');
+        }
+        Redirect::to('register');
     }
-
-
 }

@@ -4,12 +4,10 @@ use App\Controllers\{AuthenticationController, CalendarController, DashboardCont
 use App\Core\Router\Router;
 
 /** @var Router $router */
-$router->get("", controller: [AuthenticationController::class, 'index']);
+$router->get("", controller: [DashboardController::class, 'index']);
 
-$router->post("login", controller: [AuthenticationController::class, 'login']);
+$router->get('authUser/calendar', controller: [CalendarController::class, 'authUserCalendar']);
 
-$router->get('register', controller: [AuthenticationController::class, 'registerForm']);
+require_once 'auth.php';
 
-$router->post('register', controller: [AuthenticationController::class, 'register']);
 
-$router->get("dashboard", controller: [DashboardController::class, 'index']);

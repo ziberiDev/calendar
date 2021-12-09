@@ -8,12 +8,11 @@ use App\Core\View\View;
 
 class Controller extends View
 {
-    use QueryBuilder, Authentication;
+    use QueryBuilder;
 
     public function __construct()
     {
         parent::__construct();
-        $this->__AuthenticationConstruct();
         $this->__QueryBuilderConstruct();
     }
 }

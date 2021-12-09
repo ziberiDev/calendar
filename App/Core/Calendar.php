@@ -3,12 +3,11 @@
 namespace App\Core;
 
 use App\Core\View\Collection;
+use DateTime;
 
 class Calendar
 {
     protected const calendar = CAL_GREGORIAN;
-
-    public array $daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
     public int $currentYear;
 
@@ -30,29 +29,34 @@ class Calendar
     {
         for ($i = 1; $i <= $this->numberOfDays; $i++) {
             $day_of_week = date('l', strtotime("{$this->currentYear}-{$this->currentMonth}-$i"));
-            array_push($this->data, [
-                'day' => $i,
+            $day_date = date('Y-m-d', strtotime("{$this->currentYear}-{$this->currentMonth}-$i"));
+            $this->data[$i] = [
+                'date' => $day_date,
                 'day_string' => $day_of_week,
                 'events' => []
-            ]);
+            ];
         }
     }
 
     public function setEvents(Collection $events)
     {
-        foreach ($this->data as $day){
-
+        for ($i = 1; $i <= count($this->data); $i++) {
+            foreach ($events as $event) {
+                $eventDate = new DateTime($event->event_date);
+                if ($this->data[$i]['date'] == $eventDate->format('Y-m-d')) {
+                    $this->data[$i]['events'][] = $event;
+                }
+            }
         }
+
     }
 
     public function toJson()
     {
         echo json_encode([
             "year" => $this->currentYear,
-            "month" => $this->currentMonth,
-            "data" => $this->data,
-            "next" => $this->currentMonth + 1,
-            "prev" => $this->currentMonth - 1
+            "month" => date('M', strtotime("{$this->currentYear}-{$this->currentMonth}")),
+            "calendar" => $this->data,
         ]);
     }
 

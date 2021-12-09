@@ -72,7 +72,6 @@ trait QueryBuilder
         return $this;
     }
 
-
     public function insert(string $table, array $data)
     {
         $columns = count($data) == count($data, COUNT_RECURSIVE) ? array_keys($data) : array_keys($data[0]);
@@ -109,20 +108,18 @@ trait QueryBuilder
     }
 
     /**
-     * @return Collection|string|stdClass
+     * @return Collection|string
      */
-    public function get(): Collection|string|stdClass
+    public function get(): Collection|string
     {
         try {
             $statement = $this->db->prepare($this->query);
             $statement->execute($this->bindParams ?? []);
             $data = $statement->fetchAll(PDO::FETCH_CLASS);
-            if (count($data) > 1) {
+            if ($data) {
                 return new Collection($data);
-            } elseif ($data) {
-                return $data[0];
             }
-            return false;
+            return new Collection([]);
 
         } catch (\Exception $e) {
             return $e->getMessage();
@@ -131,22 +128,18 @@ trait QueryBuilder
 
     public function execute()
     {
-
         try {
-
             $statement = $this->db->prepare($this->query);
-
             foreach ($this->bindParams as $bindParam) {
                 foreach ($bindParam as $key => $value) {
                     $param = is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR;
                     $statement->bindValue($key, $value, $param);
-
                 }
-
             }
             $statement->execute();
         } catch (\PDOException $e) {
             var_dump($e->getMessage());
+            die();
         }
     }
 }

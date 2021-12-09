@@ -15,10 +15,10 @@ class View
     public function __construct()
     {
         $this->blade = new Blade('./resources/views', 'cache');
+
     }
 
-
-    public function renderView($name, array $data = []): void
+    public function renderView($name, array $data = [])
     {
         echo $this->blade->render($name, $data);
     }

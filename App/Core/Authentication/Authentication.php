@@ -6,18 +6,16 @@ use App\Core\Database\QueryBuilder;
 use App\Core\Helpers\Hash;
 use App\Core\Request\Request;
 use App\Core\Session\Session;
+use App\Core\View\Collection;
 use stdClass;
 
 trait Authentication
 {
     use QueryBuilder;
 
-    protected Session $session;
-
     public function __AuthenticationConstruct()
     {
         $this->__QueryBuilderConstruct();
-        $this->session = new Session();
     }
 
     public function authenticate(Request $request)
@@ -25,7 +23,7 @@ trait Authentication
         $params = $request->getParams();
 
         if ($user = $this->try($params->email, $params->password)) {
-            $this->session->set('user', $user);
+            Session::set('user', $user);
             return true;
         }
         return false;
@@ -39,7 +37,25 @@ trait Authentication
             ->andWhere('password', '=', $password)
             ->get();
         if ($user) {
-            return $user;
+            return $user->toArray(0);
+        }
+        return false;
+    }
+
+    private function performRegistration(Request $request)
+    {
+        $params = $request->getParams();
+
+        $user = $this->insert('users', [
+            'name' => $params->name,
+            'last_name' => $params->last_name,
+            'email' => $params->email,
+            'password' => Hash::make($params->password)
+        ]);
+
+        if ($user) {
+            Session::set('user', $request->getParams());
+            return true;
         }
         return false;
     }
