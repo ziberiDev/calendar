@@ -88,6 +88,11 @@ class Validator
 
     }
 
+    protected function optional(string|int $inputValue, string $input, string|int $checkValue = 0)
+    {
+        return;
+    }
+
     /**
      * @param string|int $inputValue
      * @param string|int $checkValue
@@ -130,7 +135,7 @@ class Validator
     public function exists(string $inputValue, string $input, string|int $checkValue = 0)
     {
 
-        $emails = $this->select($input)->from($checkValue)->where($input, '=' , $inputValue)->get();
+        $emails = $this->select($input)->from($checkValue)->where($input, '=', $inputValue)->get();
 
         if ($emails) {
             $this->messages[$input][] = "The {$input} already exists.";

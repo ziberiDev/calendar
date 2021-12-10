@@ -38,7 +38,7 @@ class Calendar
         }
     }
 
-    public function setEvents(Collection $events)
+    public function setEvents(Collection|array $events)
     {
         for ($i = 1; $i <= count($this->data); $i++) {
             foreach ($events as $event) {

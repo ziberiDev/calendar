@@ -108,18 +108,18 @@ trait QueryBuilder
     }
 
     /**
-     * @return Collection|string
+     * @return Collection|string|array
      */
-    public function get(): Collection|string
+    public function get(): Collection|string|array
     {
         try {
             $statement = $this->db->prepare($this->query);
             $statement->execute($this->bindParams ?? []);
             $data = $statement->fetchAll(PDO::FETCH_CLASS);
-            if ($data) {
+            if (count($data) >= 1) {
                 return new Collection($data);
             }
-            return new Collection([]);
+            return $data;
 
         } catch (\Exception $e) {
             return $e->getMessage();

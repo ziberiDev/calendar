@@ -6,18 +6,19 @@ use stdClass;
 
 class Request extends Validator
 {
-    public stdClass $GET_PARAMS;
+    public stdClass|null $GET_PARAMS;
 
-    public stdClass $POST_PARAMS;
+    public stdClass|null $POST_PARAMS;
 
     protected stdClass $stdClass;
 
     public function __construct()
     {
-        parent::__construct();
+
         $this->stdClass = new stdClass();
         $this->setGetParams();
         $this->setPostParams();
+        parent::__construct();
     }
 
     /**
@@ -40,7 +41,9 @@ class Request extends Validator
 
     protected function setGetParams()
     {
-        if (!$_GET) return;
+        if (!$_GET) {
+            return;
+        }
         foreach ($_GET as $key => $value) {
             $this->stdClass->{$key} = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
         }
@@ -49,12 +52,20 @@ class Request extends Validator
 
     protected function setPostParams()
     {
-        if (!$_POST) return;
+        if (!$_POST) {
+            return;
+        }
         foreach ($_POST as $key => $value) {
             $this->stdClass->{$key} = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
         }
         $this->POST_PARAMS = $this->stdClass;
 
+    }
+
+    public function all()
+    {
+        $params = $this->GET_PARAMS ?? $this->POST_PARAMS;
+        return (array)$params;
     }
 
     public function getParams()

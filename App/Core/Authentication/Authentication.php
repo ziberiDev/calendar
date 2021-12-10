@@ -36,6 +36,7 @@ trait Authentication
             ->where('email', '=', $email)
             ->andWhere('password', '=', $password)
             ->get();
+
         if ($user) {
             return $user->toArray(0);
         }
