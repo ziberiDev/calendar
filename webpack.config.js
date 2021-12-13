@@ -8,7 +8,7 @@ module.exports = {
         filename: "app.js",
         publicPath: "/"
     },
-    watch: true,
+    watch: false,
     module: {
         rules: [
             {

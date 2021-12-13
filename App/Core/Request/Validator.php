@@ -6,7 +6,7 @@ use App\Core\Database\QueryBuilder;
 
 class Validator
 {
-    use QueryBuilder;
+
 
     /**
      * @var array $rules
@@ -21,9 +21,8 @@ class Validator
     protected array $messages = [];
 
 
-    public function __construct()
+    public function __construct(protected QueryBuilder $db)
     {
-        $this->__QueryBuilderConstruct();
     }
 
     /**
@@ -135,7 +134,7 @@ class Validator
     public function exists(string $inputValue, string $input, string|int $checkValue = 0)
     {
 
-        $emails = $this->select($input)->from($checkValue)->where($input, '=', $inputValue)->get();
+        $emails = $this->db->select($input)->from($checkValue)->where($input, '=', $inputValue)->get();
 
         if ($emails) {
             $this->messages[$input][] = "The {$input} already exists.";

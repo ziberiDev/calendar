@@ -3,28 +3,27 @@
 namespace App\Controllers;
 
 use App\Core\Calendar;
+use App\Core\Database\QueryBuilder;
 use App\Core\Request\Request;
 use App\Core\Session\Session;
+use App\Core\View\View;
 
 class CalendarController extends Controller
 {
-    protected Calendar $calendar;
-
-    public function __construct()
+    public function __construct(protected Calendar $calendar, View $view, Request $request, QueryBuilder $db)
     {
-        parent::__construct();
-        $this->calendar = new Calendar();
+        if (!Session::get('user')) return header('Location:login');
+        parent::__construct($view, $db, $request);
     }
 
     public function authUserCalendar()
     {
-        $request = new Request();
-        $events = $this->select()->from('events')
+        $events = $this->db->select()->from('events')
             ->where('user_id', '=', Session::get('user')->id)
-            ->andWhere('event_date', "LIKE", "%{$request->getParams()->date}%")
+            ->andWhere('event_date', "LIKE", "%{$this->request->getParams()->date}%")
             ->get();
 
-        $this->calendar->initializeFromDate($request->getParams()->date);
+        $this->calendar->initializeFromDate($this->request->getParams()->date);
         $this->calendar->renderDays();
 
         $this->calendar->setEvents($events);

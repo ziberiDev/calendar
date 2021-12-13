@@ -8,7 +8,7 @@ use Dotenv\Dotenv;
 
 class App
 {
-    protected $env;
+    protected Dotenv $env;
 
 
     public function __construct()
@@ -18,14 +18,10 @@ class App
         $this->env->required(['DB_HOST', 'DB_NAME', 'DB_USER'])->notEmpty();
     }
 
-    public static function env($constantName)
-    {
-        echo getenv($constantName);
-    }
 
     public function initialize()
     {
-        Router::loadWebRoutes()
+        Router::load()
             ->direct(Request::uri(), Request::method());
     }
 

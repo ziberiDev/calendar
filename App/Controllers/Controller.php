@@ -4,15 +4,19 @@ namespace App\Controllers;
 
 use App\Core\Authentication\Authentication;
 use App\Core\Database\QueryBuilder;
+use App\Core\Request\Request;
 use App\Core\View\View;
 
-class Controller extends View
-{
-    use QueryBuilder;
 
-    public function __construct()
+class Controller
+{
+
+
+    public function __construct(
+        protected View $view,
+        protected QueryBuilder $db,
+        protected Request $request)
     {
-        parent::__construct();
-        $this->__QueryBuilderConstruct();
+
     }
 }

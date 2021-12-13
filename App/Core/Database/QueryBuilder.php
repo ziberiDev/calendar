@@ -6,7 +6,7 @@ use App\Core\View\Collection;
 use PDO;
 use stdClass;
 
-trait QueryBuilder
+class QueryBuilder
 {
     /**
      * @var PDO|null
@@ -18,7 +18,7 @@ trait QueryBuilder
 
     public array $bindParams = [];
 
-    public function __QueryBuilderConstruct()
+    public function __construct()
     {
         $this->db = DBConnection::getInstance();
     }

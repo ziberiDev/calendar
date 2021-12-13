@@ -42,11 +42,9 @@ class AuthenticationController extends Controller
         if (!$validation->isValid()) {
             Session::flash('errors', $validation->getMessages());
             Redirect::to("login");
-            die();
         }
         if ($this->authenticate($request)) {
             Redirect::to('/');
-            die();
         }
         Session::flash('authError', ['Credentials dont mach']);
         Redirect::to('login');

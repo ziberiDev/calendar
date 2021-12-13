@@ -3,10 +3,19 @@
 namespace App\Core\Router;
 
 
+use App\Controllers\Controller;
+use App\Core\Database\QueryBuilder;
+use App\Core\Request\Request;
+use App\Core\View\View;
+use DI\Container;
+use DI\ContainerBuilder;
 use Exception;
+use function DI\get;
 
 class Router
 {
+    protected Container $container;
+
     /**
      * @var array routes array
      */
@@ -17,10 +26,16 @@ class Router
 
     /**
      * @return Router
+     * @throws Exception
      */
-    public static function loadWebRoutes(): Router
+    public static function load(): Router
     {
         $router = new self;
+        $builder = new ContainerBuilder();
+        /* $definitions = require_once ;*/
+        $builder->addDefinitions('./definitions.php');
+        $builder->useAutowiring(true);
+        $router->container = $builder->build();
         require_once "./resources/routes/web.php";
         return $router;
     }
@@ -61,10 +76,14 @@ class Router
      */
     protected function callAction($controller, $action): mixed
     {
-        $controller = new $controller();
+
+        $controller = $this->container->make($controller);
+
+
         if (!method_exists($controller, $action)) {
             throw new Exception("$controller does not respond to the $action action");
         }
+
         return $controller->$action();
     }
 }
