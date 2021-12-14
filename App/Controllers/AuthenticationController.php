@@ -3,39 +3,36 @@
 namespace App\Controllers;
 
 use App\Core\Authentication\Authentication;
+use App\Core\Bootstrap\Facade\App;
+use App\Core\Database\QueryBuilder;
 use App\Core\Helpers\Redirect;
 use App\Core\Request\Request;
 use App\Core\Session\Session;
+use App\Core\View\View;
 
 
 class AuthenticationController extends Controller
 {
     use Authentication;
 
-    public function __construct()
-    {
-        //Check if user exists in session
-        if (Session::get('user')) Redirect::to('/');
-        parent::__construct();
-        $this->__AuthenticationConstruct();
-    }
-
     public function index()
     {
-        return $this->renderView('auth.login', ['session' => Session::class]);
+        return $this->view->renderView('auth.login', ['session' => Session::class]);
     }
 
     public function registerForm()
     {
-
-        return $this->renderView('auth.register');
+        //Check if user exists in session
+        if (Session::get('user')) Redirect::to('/');
+        return $this->view->renderView('auth.register');
     }
-
 
     public function login()
     {
-        $request = new Request();
-        $validation = $request->validate([
+        //Check if user exists in session
+        if (Session::get('user')) Redirect::to('/');
+
+        $validation = $this->request->validate([
             'email' => 'required|email',
             'password' => 'required'
         ]);
@@ -43,19 +40,18 @@ class AuthenticationController extends Controller
             Session::flash('errors', $validation->getMessages());
             Redirect::to("login");
         }
-        if ($this->authenticate($request)) {
+        if ($this->authenticate($this->request)) {
             Redirect::to('/');
         }
         Session::flash('authError', ['Credentials dont mach']);
         Redirect::to('login');
-
     }
 
     public function register()
     {
-        $request = new Request();
-
-        $validation = $request->validate([
+        //Check if user exists in session
+        if (Session::get('user')) Redirect::to('/');
+        $validation = $this->request->validate([
             'email' => 'required|email|exists:users',
             'password' => 'required|min:8|regex:^\S*(?=\S*[a-z])(?=\S*[A-Z])(?=\S*[\d])\S*$^',
             'name' => 'required|min:3|max:10',
@@ -63,9 +59,19 @@ class AuthenticationController extends Controller
         ]);
         if (!$validation->isValid()) {
             Session::flash('errors', $validation->getMessages());
-        } elseif ($this->performRegistration($request)) {
+        } elseif ($this->performRegistration($this->request)) {
             Redirect::to('/');
         }
         Redirect::to('register');
+    }
+
+    public function logout()
+    {
+        //Check if user exists in session
+        if (!Session::get('user')) Redirect::to('login');
+
+        if (Session::delete('user'))
+            Redirect::to('login');
+        return false;
     }
 }

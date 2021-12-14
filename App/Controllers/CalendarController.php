@@ -25,11 +25,7 @@ class CalendarController extends Controller
 
         $this->calendar->initializeFromDate($this->request->getParams()->date);
         $this->calendar->renderDays();
-
         $this->calendar->setEvents($events);
-
         return $this->calendar->toJson();
-
-        /*return $this->renderView('auth.index', ['daysOfWeek' => $daysOfWeek]);*/
     }
 }

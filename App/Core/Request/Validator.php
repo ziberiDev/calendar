@@ -27,6 +27,7 @@ class Validator
 
     /**
      * @param array $rules
+     * @return $this
      */
     public function validate(array $rules)
     {

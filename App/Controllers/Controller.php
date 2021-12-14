@@ -10,13 +10,8 @@ use App\Core\View\View;
 
 class Controller
 {
-
-
     public function __construct(
-        protected View $view,
+        protected View         $view,
         protected QueryBuilder $db,
-        protected Request $request)
-    {
-
-    }
+        protected Request      $request){}
 }

@@ -21,6 +21,13 @@ class Session
         return $_SESSION[$key] ?? null;
     }
 
+    public static function delete(string $key)
+    {
+        if (!isset($_SESSION[$key])) return false;
+        unset($_SESSION[$key]);
+        return true;
+    }
+
     public static function getFlashed($key)
     {
         if (isset($_SESSION[$key]) && $_SESSION[$key]['flush']) {

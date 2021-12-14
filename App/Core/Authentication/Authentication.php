@@ -1,22 +1,15 @@
 <?php
-
 namespace App\Core\Authentication;
 
-use App\Core\Database\QueryBuilder;
-use App\Core\Helpers\Hash;
-use App\Core\Request\Request;
-use App\Core\Session\Session;
-use App\Core\View\Collection;
+use App\Core\{Database\QueryBuilder, Helpers\Hash, Request\Request, Session\Session};
 use stdClass;
 
 trait Authentication
 {
-    use QueryBuilder;
-
-    public function __AuthenticationConstruct()
-    {
-        $this->__QueryBuilderConstruct();
-    }
+    /**
+     * @Inject
+     */
+    protected QueryBuilder $db;
 
     public function authenticate(Request $request)
     {
@@ -32,7 +25,7 @@ trait Authentication
     protected function try(string $email, string $password): stdClass|bool
     {
         $password = Hash::make($password);
-        $user = $this->select('id,name,last_name,email')->from('users')
+        $user = $this->db->select('id,name,last_name,email')->from('users')
             ->where('email', '=', $email)
             ->andWhere('password', '=', $password)
             ->get();
@@ -47,7 +40,7 @@ trait Authentication
     {
         $params = $request->getParams();
 
-        $user = $this->insert('users', [
+        $user = $this->db->insert('users', [
             'name' => $params->name,
             'last_name' => $params->last_name,
             'email' => $params->email,

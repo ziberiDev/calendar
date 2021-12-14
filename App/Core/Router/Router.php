@@ -4,6 +4,7 @@ namespace App\Core\Router;
 
 
 use App\Controllers\Controller;
+use App\Core\Bootstrap\Facade\App;
 use App\Core\Database\QueryBuilder;
 use App\Core\Request\Request;
 use App\Core\View\View;
@@ -31,12 +32,9 @@ class Router
     public static function load(): Router
     {
         $router = new self;
-        $builder = new ContainerBuilder();
-        /* $definitions = require_once ;*/
-        $builder->addDefinitions('./definitions.php');
-        $builder->useAutowiring(true);
-        $router->container = $builder->build();
+
         require_once "./resources/routes/web.php";
+
         return $router;
     }
 
@@ -76,9 +74,7 @@ class Router
      */
     protected function callAction($controller, $action): mixed
     {
-
-        $controller = $this->container->make($controller);
-
+        $controller = App::get($controller);
 
         if (!method_exists($controller, $action)) {
             throw new Exception("$controller does not respond to the $action action");

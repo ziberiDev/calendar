@@ -4,25 +4,37 @@ namespace App\Core\Bootstrap;
 
 use App\Core\Request\Request;
 use App\Core\Router\Router;
+use App\Core\Session\Session;
+use DI\Container;
+use DI\ContainerBuilder;
 use Dotenv\Dotenv;
+use function DI\create;
+use function DI\get;
 
-class App
+class App extends ContainerBuilder
 {
-    protected Dotenv $env;
+
+    private Container $container;
 
 
-    public function __construct()
+    protected function buildContainer()
     {
-        $this->env = Dotenv::createImmutable("./");
-        $this->env->load();
-        $this->env->required(['DB_HOST', 'DB_NAME', 'DB_USER'])->notEmpty();
+        $this->addDefinitions('./definitions.php');
+        $this->useAutowiring(true);
+        $this->container = $this->build();
     }
 
-
-    public function initialize()
+    /**
+     * @throws \Exception
+     */
+    public function get(string $string)
     {
-        Router::load()
-            ->direct(Request::uri(), Request::method());
-    }
+        $this->buildContainer();
+        try {
+            return $this->container->get($string);
 
+        } catch (\Throwable $e) {
+            throw new \Exception("{$e->getMessage()}");
+        }
+    }
 }
