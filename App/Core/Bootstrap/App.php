@@ -2,20 +2,11 @@
 
 namespace App\Core\Bootstrap;
 
-use App\Core\Request\Request;
-use App\Core\Router\Router;
-use App\Core\Session\Session;
-use DI\Container;
-use DI\ContainerBuilder;
-use Dotenv\Dotenv;
-use function DI\create;
-use function DI\get;
+use DI\{Container, ContainerBuilder};
 
 class App extends ContainerBuilder
 {
-
     private Container $container;
-
 
     protected function buildContainer()
     {

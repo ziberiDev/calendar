@@ -19,6 +19,6 @@ class View
 
     public function renderView($name, array $data = [])
     {
-        echo $this->blade->render($name, $data);
+        return $this->blade->render($name, $data);
     }
 }

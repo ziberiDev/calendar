@@ -4,7 +4,7 @@ window.calendar = () => {
     return {
         eventTitle: "",
         eventDescription: "",
-        eventTime: '10:00',
+        eventTime: null,
         eventDate: '',
         modal: false,
         Date: new Date(),

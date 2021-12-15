@@ -2,19 +2,21 @@
 
 namespace App\Controllers;
 
-use App\Core\Calendar;
+use App\Core\CalendarService;
 use App\Core\Database\QueryBuilder;
+use App\Core\Helpers\Redirect;
 use App\Core\Request\Request;
+use App\Core\Response\Response;
 use App\Core\Session\Session;
 use App\Core\View\View;
 
 
 class DashboardController extends Controller
 {
-    public function __construct(protected Calendar $calendar, View $view, Request $request, QueryBuilder $db)
+    public function __construct(protected CalendarService $calendar, View $view, Request $request, QueryBuilder $db, Response $response)
     {
-        if (!Session::get('user')) return header('Location:login');
-        parent::__construct($view, $db, $request);
+        if (!Session::get('user')) Redirect::to('login');
+        parent::__construct($view, $db, $request, $response);
     }
 
     public function index()

@@ -5,7 +5,7 @@ namespace App\Core;
 use App\Core\View\Collection;
 use DateTime;
 
-class Calendar
+class CalendarService
 {
     protected const calendar = CAL_GREGORIAN;
 
@@ -48,12 +48,11 @@ class Calendar
                 }
             }
         }
-
     }
 
     public function toJson()
     {
-        echo json_encode([
+        return json_encode([
             "year" => $this->currentYear,
             "month" => date('M', strtotime("{$this->currentYear}-{$this->currentMonth}")),
             "calendar" => $this->data,

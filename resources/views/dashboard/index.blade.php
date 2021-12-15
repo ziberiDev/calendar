@@ -55,7 +55,8 @@
                             </div>
                             <div class="mb-3">
                                 <label for="time" class="form-label">Event Description</label>
-                                <input x-model="eventTime" type="time" name="description" class="form-control"
+                                <input x-model="eventTime" type="time" name="description"
+                                       class="form-control"
                                        id="description">
                                 <p x-text="`${eventTime}`"></p>
                             </div>

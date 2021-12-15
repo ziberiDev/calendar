@@ -37,7 +37,7 @@ class Validator
         $this->setRules($this->inputs, $rules);
 
         foreach ($this->inputs as $input => $inputValue) {
-
+            if (!key_exists($input, $this->rules)) break;
             foreach ($this->rules[$input] as $method => $checkValue) {
                 $this->$method(
                     inputValue: $inputValue,
@@ -82,6 +82,7 @@ class Validator
      */
     protected function required(string|int $inputValue, string $input, string|int $checkValue = 0)
     {
+        //TODO: fix required function
         if (!$inputValue) {
             $this->messages[$input][] = "The {$input} is required";
         }
@@ -90,7 +91,7 @@ class Validator
 
     protected function optional(string|int $inputValue, string $input, string|int $checkValue = 0)
     {
-        return;
+        //
     }
 
     /**
