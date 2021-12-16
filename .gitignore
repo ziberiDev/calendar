@@ -1,9 +1,0 @@
-/vendor/
-/cache/
-/composer.lock
-/.env
-/cache/
-/.idea/
-/App/Controllers/CalendarController.php
-/package-lock.json/
-/node_modules/
