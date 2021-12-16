@@ -4,7 +4,7 @@ window.calendar = () => {
     return {
         eventTitle: "",
         eventDescription: "",
-        eventTime: null,
+        eventTime: "",
         eventDate: '',
         modal: false,
         Date: new Date(),
@@ -42,7 +42,7 @@ window.calendar = () => {
             let data = new FormData()
             data.append('title', this.eventTitle)
             data.append('description', this.eventDescription)
-            data.append('event_date', this.eventDate + " " + this.eventTime)
+            data.append('event_date', this.eventTime ? this.eventDate + " " + this.eventTime : '')
             axios.post('event/create', data).then(res => {
                 this.modal = false
                 this.get_calendar()
@@ -93,7 +93,7 @@ window.calendar = () => {
         resetEventForm() {
             this.eventTitle = ""
             this.eventDescription = ""
-            this.eventTime = '10:00'
+            this.eventTime = ''
             this.eventDate = ''
         }
     }
