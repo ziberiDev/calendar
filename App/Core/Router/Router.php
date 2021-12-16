@@ -6,6 +6,9 @@ namespace App\Core\Router;
 use App\Controllers\Controller;
 use App\Core\Bootstrap\Facade\App;
 use App\Core\Database\QueryBuilder;
+use App\Core\Exceptions\ControllerUndefinedMethodException;
+use App\Core\Exceptions\ResponseErrorException;
+use App\Core\Exceptions\RouteNotDefinedException;
 use App\Core\Request\Request;
 use App\Core\View\View;
 use DI\Container;
@@ -61,24 +64,27 @@ class Router
     public function direct($uri, $requestType): mixed
     {
         if (!array_key_exists($uri, $this->routes[$requestType])) {
-            throw new Exception("route is not defined");
+            throw new RouteNotDefinedException("$requestType request is not supported for route $uri");
         }
         return $this->callAction(...$this->routes[$requestType][$uri]);
     }
 
     /**
-     * @param $controller
+     * @param  $controller
      * @param $action
      * @return mixed
      * @throws Exception
      */
     protected function callAction($controller, $action): mixed
     {
+
         $controller = App::get($controller);
 
+
         if (!method_exists($controller, $action)) {
-            throw new Exception("$controller does not respond to the $action action");
+            return throw new ControllerUndefinedMethodException(get_class($controller) . "does not respond to the $action action");
         }
+
         echo $controller->$action();
         die();
     }

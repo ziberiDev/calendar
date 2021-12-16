@@ -11,18 +11,13 @@ use App\{Core\Database\QueryBuilder,
     Core\View\View
 };
 
-
 class EventController extends Controller
 {
-    public function __construct(View $view, QueryBuilder $db, Request $request, Response $response)
-    {
-        if (!Session::get('user')) return Redirect::to('login');
-        parent::__construct($view, $db, $request, $response);
 
-    }
 
     public function create()
     {
+        if (!Session::get('user')) return $this->response("unauthenticated", 401);
         $this->request->validate([
             'title' => 'required',
             'description' => 'required',

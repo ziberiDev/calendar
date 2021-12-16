@@ -28,4 +28,5 @@ class Controller
             ->create($content, $code, $headers)
             ->send();
     }
+
 }

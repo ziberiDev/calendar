@@ -2,6 +2,8 @@
 
 namespace App\Core\Helpers;
 
+use App\Core\Exceptions\ResponseErrorException;
+
 class Redirect
 {
     public static function to(string $path)

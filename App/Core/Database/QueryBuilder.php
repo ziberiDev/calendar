@@ -112,7 +112,7 @@ class QueryBuilder
      */
     public function get(): Collection|string|array
     {
-        try {
+
             $statement = $this->db->prepare($this->query);
             $statement->execute($this->bindParams ?? []);
             $data = $statement->fetchAll(PDO::FETCH_CLASS);
@@ -120,15 +120,11 @@ class QueryBuilder
                 return new Collection($data);
             }
             return $data;
-
-        } catch (\Exception $e) {
-            return $e->getMessage();
-        }
     }
 
     public function execute()
     {
-        try {
+
             $statement = $this->db->prepare($this->query);
             foreach ($this->bindParams as $bindParam) {
                 foreach ($bindParam as $key => $value) {
@@ -137,9 +133,6 @@ class QueryBuilder
                 }
             }
             $statement->execute();
-        } catch (\PDOException $e) {
-            var_dump($e->getMessage());
-            die();
-        }
+
     }
 }

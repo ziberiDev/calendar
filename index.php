@@ -7,29 +7,23 @@ use App\Core\Router\Router;
 
 require_once './vendor/autoload.php';
 
+// Env file configuration and loading.
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->safeLoad();
 
-$data = [
-    'message' => 'success',
-    "code" => 500
-];
-
-/*http_response_code("500");
-file_get_contents("https://google.com");
-header('Content-Type: application-json;charset=utf-8');
-
-
-die();*/
+// Initialize Session for app.
 $session = App::get('Session');
 $session->start();
 
+
 try {
+    //Load route routes and initialize routing.
     Router::load()
         ->direct(Request::uri(), Request::method());
-
-} catch (Throwable $th) {
-    echo $th->getMessage();
+} catch (Exception $th) {
+    //TODO: Log error messages here
+    $handler = new \App\Core\Exceptions\ExceptionHandler($th);
+    $handler->handle();
 }
 
 

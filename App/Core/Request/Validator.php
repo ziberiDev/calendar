@@ -14,7 +14,7 @@ class Validator
     protected array $rules = [];
 
 
-    protected array $inputs;
+    protected array|\stdClass $inputs;
 
     /**
      * @var array $messages

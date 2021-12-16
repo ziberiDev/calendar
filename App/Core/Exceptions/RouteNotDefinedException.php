@@ -2,7 +2,9 @@
 
 namespace App\Core\Exceptions;
 
-class RouteNotDefinedException
+use Exception;
+
+class RouteNotDefinedException extends Exception
 {
 
 }
