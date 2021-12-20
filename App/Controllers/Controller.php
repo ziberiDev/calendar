@@ -17,10 +17,7 @@ class Controller
         protected QueryBuilder $db,
         protected Request      $request,
         protected Response     $response
-    )
-    {
-    }
-
+    ){}
 
     public function response(string $content, ?int $code = 200, ?array $headers = [])
     {
@@ -28,5 +25,4 @@ class Controller
             ->create($content, $code, $headers)
             ->send();
     }
-
 }

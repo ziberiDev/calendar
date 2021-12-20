@@ -2,13 +2,14 @@
 
 namespace App\Controllers;
 
-use App\Core\CalendarService;
-use App\Core\Database\QueryBuilder;
-use App\Core\Helpers\Redirect;
-use App\Core\Request\Request;
-use App\Core\Response\Response;
-use App\Core\Session\Session;
-use App\Core\View\View;
+use App\{Core\CalendarService,
+    Core\Database\QueryBuilder,
+    Core\Helpers\Redirect,
+    Core\Request\Request,
+    Core\Response\Response,
+    Core\Session\Session,
+    Core\View\View
+};
 
 
 class DashboardController extends Controller
@@ -21,8 +22,6 @@ class DashboardController extends Controller
 
     public function index()
     {
-        $this->calendar->initializeFromDate(date('Y-m-d'));
-        $this->calendar->renderDays();
         return $this->view->renderView('dashboard.index');
     }
 

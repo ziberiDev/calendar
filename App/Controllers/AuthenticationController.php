@@ -2,13 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Core\Authentication\Authentication;
-use App\Core\Bootstrap\Facade\App;
-use App\Core\Database\QueryBuilder;
-use App\Core\Helpers\Redirect;
-use App\Core\Request\Request;
-use App\Core\Session\Session;
-use App\Core\View\View;
+use App\{Core\Authentication\Authentication, Core\Helpers\Redirect, Core\Session\Session};
 
 
 class AuthenticationController extends Controller
@@ -17,7 +11,7 @@ class AuthenticationController extends Controller
 
     public function index()
     {
-        return $this->view->renderView('auth.login', ['session' => Session::class]);
+        return $this->view->renderView('auth.login', ['session' => Session::class]); //
     }
 
     public function registerForm()
