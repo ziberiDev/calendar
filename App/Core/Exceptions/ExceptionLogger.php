@@ -4,17 +4,17 @@ namespace App\Core\Exceptions;
 
 class ExceptionLogger
 {
-    protected string $time_of_log;
-    protected string $logFile = "./storage/error.log";
+    protected static string $logFile = "./storage/error.log";
 
-    public function __construct()
+
+    public static function log(string $message)
     {
-        $this->time_of_log = date('r');
-    }
+        $time_of_log = date('r');
+        $file = fopen(self::$logFile, 'a+');
 
-    public static function log()
-    {
-
+        fwrite($file, PHP_EOL . $time_of_log . PHP_EOL);
+        fwrite($file, $message . PHP_EOL);
+        fclose($file);
     }
 
 

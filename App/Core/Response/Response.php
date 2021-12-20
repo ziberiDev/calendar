@@ -17,7 +17,6 @@ class Response
         401
     ];
 
-
     public function create(string $content = '', ?int $code = 200, ?array $headers = [])
     {
         if ($code) {

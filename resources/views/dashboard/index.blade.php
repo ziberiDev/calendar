@@ -23,7 +23,7 @@
                     <span x-text="calendarDay.day_string"></span>
                     <ul>
                         <template x-for="(event , key) in calendarDay.events" :key="key">
-                            <li>
+                            <li class="eventLi">
                                 <small x-text="`${event.title} ${returnDateHours(event.event_date)}`"></small>
                             </li>
                         </template>

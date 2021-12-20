@@ -55,8 +55,7 @@ window.calendar = () => {
             this.day = 0
             this.setCurrentDay()
             this.get_calendar()
-        }
-        ,
+        },
         prevYear() {
             --this.year
             this.day = 0

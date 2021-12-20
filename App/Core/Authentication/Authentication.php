@@ -22,7 +22,7 @@ trait Authentication
         return false;
     }
 
-    protected function try(string $email, string $password): stdClass|bool
+    protected function try(string $email, string $password): stdClass|null
     {
         $password = Hash::make($password);
         $user = $this->db->select('id,name,last_name,email')->from('users')

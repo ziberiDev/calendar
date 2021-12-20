@@ -6,17 +6,24 @@ use Exception;
 
 class ExceptionHandler
 {
-    protected $exceptionName;
+    protected string $exceptionName;
+
+    protected array $loggable = [
+        RouteNotDefinedException::class
+    ];
 
 
-    public function __construct(protected Exception $exception)
+    public function __construct(protected Exception $exception, protected ExceptionLogger $logger)
     {
         $this->exceptionName = get_class($exception);
     }
 
     public function handle()
     {
-        var_dump($this->exception->getTraceAsString());
+
+            $this->logger::log($this->exception);
+
+        echo $this->exception->getMessage();
     }
 
     protected function inDevelopment()

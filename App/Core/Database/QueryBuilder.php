@@ -35,6 +35,15 @@ class QueryBuilder
         }
     }
 
+    public function update(string $table, array $values)
+    {
+        $this->query = "UPDATE $table";
+        $columns = array_keys($values);
+        $values = array_values($values);
+
+        return $this->setBindParams($columns, $values, true);
+    }
+
     /**
      * @param string $table
      * @return self
@@ -80,17 +89,19 @@ class QueryBuilder
         $queryColumns = implode(', ', $columns);
         $this->query = "INSERT INTO $table ($queryColumns) ";
 
-        return $this->values($columns, $values);
+        return $this->setBindParams($columns, $values);
     }
 
-    protected function values($columns, array $values): static
+    protected function setBindParams($columns, array $values, bool $update = false): static
     {
+
         if (!is_array($values[0])) {
             array_map(function ($value, $column) {
                 return $this->bindParams[][":" . $column . "1"] = $value;
             }, $values, $columns);
             $values = implode("1,:", $columns);
-            $this->query .= " VALUES ( :{$values}1);";
+            $this->query .= !$update ? " VALUES " : " SET ";// should be decoupled
+            $this->query .= "(:{$values}1)";// should be decoupled
         } else {
             $this->query .= " VALUES ";
             $counter = 0;
@@ -100,7 +111,7 @@ class QueryBuilder
                     return $this->bindParams[$key][":{$columns[$counter++]}$key"] = $single;
                 }, $value);
                 $counter = 0;
-                $a = !next($values) ? " (:$prepareValues);" : " (:$prepareValues),";
+                $a = !next($values) ? " (:$prepareValues);" : " (:$prepareValues),"; // should be decoupled
                 $this->query .= $a;
             }
         }
@@ -112,27 +123,25 @@ class QueryBuilder
      */
     public function get(): Collection|string|array
     {
-
-            $statement = $this->db->prepare($this->query);
-            $statement->execute($this->bindParams ?? []);
-            $data = $statement->fetchAll(PDO::FETCH_CLASS);
-            if (count($data) >= 1) {
-                return new Collection($data);
-            }
-            return $data;
+        $statement = $this->db->prepare($this->query);
+        $statement->execute($this->bindParams ?? []);
+        $data = $statement->fetchAll(PDO::FETCH_CLASS);
+        if (count($data) >= 1) {
+            return new Collection($data);
+        }
+        return $data;
     }
 
     public function execute()
     {
 
-            $statement = $this->db->prepare($this->query);
-            foreach ($this->bindParams as $bindParam) {
-                foreach ($bindParam as $key => $value) {
-                    $param = is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR;
-                    $statement->bindValue($key, $value, $param);
-                }
+        $statement = $this->db->prepare($this->query);
+        foreach ($this->bindParams as $bindParam) {
+            foreach ($bindParam as $key => $value) {
+                $param = is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR;
+                $statement->bindValue($key, $value, $param);
             }
-            $statement->execute();
-
+        }
+        $statement->execute();
     }
 }

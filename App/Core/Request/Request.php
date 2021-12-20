@@ -2,6 +2,7 @@
 
 namespace App\Core\Request;
 
+use App\Core\Database\DBConnection;
 use App\Core\Database\QueryBuilder;
 use stdClass;
 
@@ -13,9 +14,8 @@ class Request extends Validator
 
     protected stdClass $stdClass;
 
-    public function __construct(QueryBuilder $db)
+    public function __construct(QueryBuilder $db )
     {
-
         $this->stdClass = new stdClass();
         $this->setGetParams();
         $this->setPostParams();

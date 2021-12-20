@@ -13,7 +13,7 @@
     "url": "https://github.com/ziberiDev/calendar.git"
   },
   "keywords": [
-    "calendat"
+    "calendar"
   ],
   "author": "Denis Ziberi",
   "license": "ISC",
@@ -32,6 +32,7 @@
   },
   "devDependencies": {
     "css-loader": "^6.5.1",
+    "source-map-loader": "^3.0.0",
     "style-loader": "^3.3.1",
     "webpack-cli": "^4.9.1"
   }
