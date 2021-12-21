@@ -14,12 +14,13 @@ class Request extends Validator
 
     protected stdClass $stdClass;
 
-    public function __construct(QueryBuilder $db )
+    public function __construct(QueryBuilder $db)
     {
         $this->stdClass = new stdClass();
         $this->setGetParams();
         $this->setPostParams();
         parent::__construct($db);
+
     }
 
     /**

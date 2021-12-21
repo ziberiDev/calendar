@@ -14,9 +14,9 @@ class QueryBuilder
     public ?PDO $db;
 
 
-    public string $query;
+    protected string $query;
 
-    public array $bindParams = [];
+    protected array $bindParams = [];
 
     public function __construct()
     {
@@ -35,13 +35,13 @@ class QueryBuilder
         }
     }
 
-    public function update(string $table, array $values)
+    public function update(string $table, array $data)
     {
-        $this->query = "UPDATE $table";
-        $columns = array_keys($values);
-        $values = array_values($values);
+        $this->query = "UPDATE $table SET ";
 
-        return $this->setBindParams($columns, $values, true);
+        $this->setBindParams($data);
+        $this->setUpdateValues();
+        return $this;
     }
 
     /**
@@ -84,42 +84,51 @@ class QueryBuilder
     public function insert(string $table, array $data)
     {
         $columns = count($data) == count($data, COUNT_RECURSIVE) ? array_keys($data) : array_keys($data[0]);
-        $values = count($data) == count($data, COUNT_RECURSIVE) ? array_values($data) : $data;
 
         $queryColumns = implode(', ', $columns);
-        $this->query = "INSERT INTO $table ($queryColumns) ";
+        $this->query = "INSERT INTO $table ($queryColumns) VALUES ";
 
-        return $this->setBindParams($columns, $values);
+        $this->setBindParams($data);
+        $this->setInsertValues();
+        return $this;
     }
 
-    protected function setBindParams($columns, array $values, bool $update = false): static
+    protected function setBindParams(array $data)
     {
-
-        if (!is_array($values[0])) {
-            array_map(function ($value, $column) {
-                return $this->bindParams[][":" . $column . "1"] = $value;
-            }, $values, $columns);
-            $values = implode("1,:", $columns);
-            $this->query .= !$update ? " VALUES " : " SET ";// should be decoupled
-            $this->query .= "(:{$values}1)";// should be decoupled
-        } else {
-            $this->query .= " VALUES ";
-            $counter = 0;
-            foreach ($values as $key => $value) {
-                $prepareValues = implode("$key ,:", $columns) . $key;
-                array_map(function ($single) use ($key, $columns, &$counter) {
-                    return $this->bindParams[$key][":{$columns[$counter++]}$key"] = $single;
-                }, $value);
-                $counter = 0;
-                $a = !next($values) ? " (:$prepareValues);" : " (:$prepareValues),"; // should be decoupled
-                $this->query .= $a;
+        $is_multi_arr = count($data) !== count($data, COUNT_RECURSIVE);
+        if ($is_multi_arr) {
+            foreach ($data as $key => $value) {
+                foreach ($value as $bindKey => $bindValue) {
+                    $this->bindParams[$key][':' . $bindKey . $key] = trim($bindValue);
+                }
             }
+            return;
         }
-        return $this;
+        foreach ($data as $bindKey => $bindValue) {
+            $this->bindParams[0][':' . $bindKey . 0] = trim($bindValue);
+        }
+    }
+
+    private function setUpdateValues()
+    {
+        foreach ($this->bindParams[0] as $key => $value) {
+            $column = trim($key, ':\0');
+            $separator = next($this->bindParams[0]) ? ' ,' : '';
+            $this->query .= $column . '=' . $key . $separator;
+        }
+    }
+
+    protected function setInsertValues()
+    {
+        foreach ($this->bindParams as $key => $value) {
+            $separator = next($this->bindParams) ? ',' : ';';
+            $this->query .= '(' . implode(',', array_keys($value)) . ')' . $separator;
+        }
     }
 
     /**
      * @return Collection|string|array
+     * @throws \PDOException
      */
     public function get(): Collection|string|array
     {
@@ -132,16 +141,19 @@ class QueryBuilder
         return $data;
     }
 
+    /**
+     * @return bool
+     */
     public function execute()
     {
-
+        var_dump($this->query);
         $statement = $this->db->prepare($this->query);
-        foreach ($this->bindParams as $bindParam) {
-            foreach ($bindParam as $key => $value) {
-                $param = is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR;
-                $statement->bindValue($key, $value, $param);
-            }
-        }
-        $statement->execute();
+        array_walk_recursive($this->bindParams, function ($value, $bindParamKey) use (&$statement) {
+            $param = is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR;
+            $statement->bindValue($bindParamKey, $value, $param);
+        });
+        return $statement->execute();
     }
+
+
 }

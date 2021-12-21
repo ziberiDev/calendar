@@ -4,6 +4,8 @@ use App\Controllers\{AuthenticationController, CalendarController, DashboardCont
 use App\Core\Router\Router;
 
 /** @var Router $router */
+$router->post("test" , controller: [DashboardController::class , 'test']);
+
 $router->get("", controller: [DashboardController::class, 'index']);
 
 $router->get('authUser/calendar', controller: [CalendarController::class, 'authUserCalendar']);
