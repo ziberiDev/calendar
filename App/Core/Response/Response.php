@@ -58,15 +58,13 @@ class Response
     protected function sendHeaders()
     {
         foreach ($this->headers as $name => $value) {
-            header(sprintf('%s : %s', $name, $value));
+            header(sprintf('%s : %s', $name, $value), true, $this->response_code);
         }
     }
 
     protected function sendResponseCode()
     {
         http_response_code($this->response_code);
-
-
     }
 
     protected function checkErrorResponseCode()

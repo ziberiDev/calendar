@@ -28,7 +28,7 @@
                         </div>
                         <div class="col-12 mb-3">
                             <label for="last_name" class="form-label">Last Name</label>
-                            <input id="last_name" type="text" name="name" class="form-control" placeholder="Last Name">
+                            <input id="last_name" type="text" name="last_name" class="form-control" placeholder="Last Name">
                             @if (Session::getFlashed('errors') !== null && isset(Session::getFlashed('errors')['last_name']) )
                                 @foreach(Session::getFlashed('errors')['last_name'] as $message)
                                     <div class="alert alert-danger alert-dismissible p-1" role="alert">

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Core\Authentication;
 
 use App\Core\{Database\QueryBuilder, Helpers\Hash, Request\Request, Session\Session};
@@ -33,22 +34,21 @@ trait Authentication
         if ($user) {
             return $user->toArray(0);
         }
-        return false;
+        return null;
     }
 
     private function performRegistration(Request $request)
     {
         $params = $request->getParams();
-
         $user = $this->db->insert('users', [
             'name' => $params->name,
             'last_name' => $params->last_name,
             'email' => $params->email,
             'password' => Hash::make($params->password)
-        ]);
+        ])->execute();
 
         if ($user) {
-            Session::set('user', $request->getParams());
+            Session::set('user', (object)$user[0]);
             return true;
         }
         return false;

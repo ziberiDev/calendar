@@ -29,14 +29,14 @@ class QueryBuilder
      */
     public function select(string $columns = '*')
     {
-        if (!isset($this->query)) {
-            $this->query = "SELECT $columns FROM ";
-            return $this;
-        }
+        $this->query = '';
+        $this->query = "SELECT $columns FROM ";
+        return $this;
     }
 
     public function update(string $table, array $data)
     {
+        $this->query = '';
         $this->query = "UPDATE $table SET ";
 
         $this->setBindParams($data);
@@ -95,7 +95,9 @@ class QueryBuilder
 
     protected function setBindParams(array $data)
     {
+        $this->bindParams = [];
         $is_multi_arr = count($data) !== count($data, COUNT_RECURSIVE);
+
         if ($is_multi_arr) {
             foreach ($data as $key => $value) {
                 foreach ($value as $bindKey => $bindValue) {
@@ -121,7 +123,7 @@ class QueryBuilder
     protected function setInsertValues()
     {
         foreach ($this->bindParams as $key => $value) {
-            $separator = next($this->bindParams) ? ',' : ';';
+            $separator = next($this->bindParams) ? ',' : ";";
             $this->query .= '(' . implode(',', array_keys($value)) . ')' . $separator;
         }
     }
@@ -135,25 +137,41 @@ class QueryBuilder
         $statement = $this->db->prepare($this->query);
         $statement->execute($this->bindParams ?? []);
         $data = $statement->fetchAll(PDO::FETCH_CLASS);
+        $this->query = '';
+        $this->bindParams = [];
         if (count($data) >= 1) {
             return new Collection($data);
         }
         return $data;
     }
 
-    /**
-     * @return bool
-     */
+    protected function returnData(int $last_table_id)
+    {
+        $data = [];
+        foreach ($this->bindParams as $key => $value) {
+            $last_table_id++;
+            array_walk_recursive($value, function ($val, $k) use ($key, &$data, $last_table_id) {
+                $data[$key]['id'] = ($last_table_id);
+                $data[$key][preg_replace("/[0-9.:]/", '', $k)] = $val;
+            });
+
+        }
+        return $data;
+    }
+
+
     public function execute()
     {
-        var_dump($this->query);
         $statement = $this->db->prepare($this->query);
         array_walk_recursive($this->bindParams, function ($value, $bindParamKey) use (&$statement) {
             $param = is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR;
             $statement->bindValue($bindParamKey, $value, $param);
         });
-        return $statement->execute();
+
+        if ($res = $statement->execute()) {
+            $last_id = $this->db->lastInsertId() - 1;
+            return $this->returnData($last_id);
+        }
+        return null;
     }
-
-
 }

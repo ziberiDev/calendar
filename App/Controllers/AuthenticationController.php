@@ -51,6 +51,7 @@ class AuthenticationController extends Controller
             'name' => 'required|min:3|max:10',
             'last_name' => 'required|min:3|max:10'
         ]);
+
         if (!$validation->isValid()) {
             Session::flash('errors', $validation->getMessages());
         } elseif ($this->performRegistration($this->request)) {

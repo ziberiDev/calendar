@@ -21,8 +21,10 @@ class Controller
 
     public function response(string $content, ?int $code = 200, ?array $headers = [])
     {
+
         return $this->response
             ->create($content, $code, $headers)
             ->send();
+
     }
 }

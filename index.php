@@ -19,7 +19,6 @@ function errorLogger($code, $msg, $file, $line, $context)
     exit();
 
 }
-
 // Env file configuration and loading.
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->safeLoad();

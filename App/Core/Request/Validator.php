@@ -161,7 +161,6 @@ class Validator
     public function exists(string $inputValue, string $input, string|int $checkValue = 0)
     {
         $emails = $this->db->select($input)->from($checkValue)->where($input, '=', $inputValue)->get();
-
         if ($emails) {
             $this->messages[$input][] = "The {$input} already exists.";
         }

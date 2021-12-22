@@ -21,7 +21,6 @@ class CalendarController extends Controller
     public function authUserCalendar()
     {
         if (!Session::get('user')) return $this->response('Unauthenticated', 401);
-
         $events = $this->db->select()->from('events')
             ->where('user_id', '=', Session::get('user')->id)
             ->andWhere('event_date', "LIKE", "%{$this->request->getParams()->date}%")
@@ -30,6 +29,7 @@ class CalendarController extends Controller
         $this->calendar->initializeFromDate($this->request->getParams()->date);
         $this->calendar->renderDays();
         $this->calendar->setEvents($events);
-        return $this->calendar->toJson();
+
+        return $this->response($this->calendar->toJson(), 200, ['Content-Type' => 'application/json']);
     }
 }

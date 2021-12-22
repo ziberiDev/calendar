@@ -17,7 +17,7 @@ class DBConnection
             "mysql:dbname={$_ENV['DB_NAME']};host={$_ENV['DB_HOST']}",
             "{$_ENV['DB_USER']}",
             "{$_ENV['DB_PASSWORD']}",
-            [PDO::ERRMODE_EXCEPTION ]
+            [PDO::ERRMODE_EXCEPTION  , PDO::PARAM_EVT_EXEC_POST]
         );
     }
 

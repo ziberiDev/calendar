@@ -27,8 +27,8 @@ class DashboardController extends Controller
     {
         $faker = Faker::create();
         $data = [];
-        for ($i = 0; $i < 1; $i++) {
-            $data = [
+        for ($i = 0; $i < 3; $i++) {
+            $data[] = [
                 'name' => $faker->firstName(),
                 'last_name' => $faker->lastName(),
                 'email' => $faker->email,
@@ -36,7 +36,10 @@ class DashboardController extends Controller
             ];
         }
 
-        $this->db->update('users', $data)->where('id', '=', '16')->execute();
+        $users = $this->db->insert('users', $data)->execute();
+      /*  ini_set('default_mimetype', 'application/json');*/ // need to improve this in the response
+
+        return $this->response(json_encode($users) , 200 , ['Content-type' => 'application/json; charset=utf-8']);
     }
 
     public function index()
@@ -46,7 +49,7 @@ class DashboardController extends Controller
 
     public function update()
     {
-       $validation = $this->request->validate([
+        $validation = $this->request->validate([
             'id' => 'required|exists:events'
         ]);
     }
