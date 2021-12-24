@@ -13,6 +13,8 @@ $router->get('authUser/calendar', controller: [CalendarController::class, 'authU
 $router->post('event/create', controller: [EventController::class, 'create']);
 
 $router->post('event/update', controller: [EventController::class, 'update']);
+
+$router->post('event/delete', controller: [EventController::class, 'delete']);
 require_once 'auth.php';
 
 

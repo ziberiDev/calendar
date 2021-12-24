@@ -4,7 +4,7 @@ namespace App\Core\Database;
 
 use App\Core\View\Collection;
 use PDO;
-use stdClass;
+
 
 class QueryBuilder
 {
@@ -12,7 +12,6 @@ class QueryBuilder
      * @var PDO|null
      */
     public ?PDO $db;
-
 
     protected string $query;
 
@@ -25,22 +24,44 @@ class QueryBuilder
 
     /**
      * @param string $columns
-     * @return $this|void
+     * @return $this
      */
     public function select(string $columns = '*')
     {
         $this->query = '';
-        $this->query = "SELECT $columns FROM ";
+        $this->query = "SELECT $columns ";
         return $this;
     }
 
     public function update(string $table, array $data)
     {
+
         $this->query = '';
         $this->query = "UPDATE $table SET ";
 
         $this->setBindParams($data);
         $this->setUpdateValues();
+        return $this;
+    }
+
+    public function insert(string $table, array $data)
+    {
+        $this->query = '';
+        $columns = count($data) == count($data, COUNT_RECURSIVE) ? array_keys($data) : array_keys($data[0]);
+
+        $queryColumns = implode(', ', $columns);
+        $this->query = "INSERT INTO $table ($queryColumns) VALUES ";
+
+        $this->setBindParams($data);
+        $this->setInsertValues();
+        return $this;
+    }
+
+    public function delete(string $table)
+    {
+        $this->query = '';
+        $this->query = "DELETE FROM $table ";
+
         return $this;
     }
 
@@ -50,7 +71,7 @@ class QueryBuilder
      */
     public function from(string $table): self
     {
-        $this->query .= "$table ";
+        $this->query .= "FROM $table ";
         return $this;
     }
 
@@ -63,35 +84,24 @@ class QueryBuilder
     public function where(string $column, string $operator, $value): self
     {
         $this->query .= " WHERE `$column` $operator :$column ";
-        $this->bindParams[":$column"] = $value;
+        $this->bindParams[][":$column"] = $value;
         return $this;
     }
 
     public function orWhere($column, $operator, $value)
     {
         $this->query .= " OR (`$column` $operator :$column) ";
-        $this->bindParams[":$column"] = $value;
+        $this->bindParams[][":$column"] = $value;
         return $this;
     }
 
     public function andWhere($column, $operator, $value)
     {
         $this->query .= " AND (`$column` $operator :$column) ";
-        $this->bindParams[":$column"] = $value;
+        $this->bindParams[][":$column"] = $value;
         return $this;
     }
 
-    public function insert(string $table, array $data)
-    {
-        $columns = count($data) == count($data, COUNT_RECURSIVE) ? array_keys($data) : array_keys($data[0]);
-
-        $queryColumns = implode(', ', $columns);
-        $this->query = "INSERT INTO $table ($queryColumns) VALUES ";
-
-        $this->setBindParams($data);
-        $this->setInsertValues();
-        return $this;
-    }
 
     protected function setBindParams(array $data)
     {
@@ -135,10 +145,12 @@ class QueryBuilder
     public function get(): Collection|string|array
     {
         $statement = $this->db->prepare($this->query);
-        $statement->execute($this->bindParams ?? []);
+        array_walk_recursive($this->bindParams, function ($value, $bindParamKey) use (&$statement) {
+            $param = is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR;
+            $statement->bindValue($bindParamKey, $value, $param);
+        });
+        $statement->execute();
         $data = $statement->fetchAll(PDO::FETCH_CLASS);
-        $this->query = '';
-        $this->bindParams = [];
         if (count($data) >= 1) {
             return new Collection($data);
         }
@@ -154,15 +166,14 @@ class QueryBuilder
                 $data[$key]['id'] = ($last_table_id);
                 $data[$key][preg_replace("/[0-9.:]/", '', $k)] = $val;
             });
-
         }
         return $data;
     }
 
-
     public function execute()
     {
         $statement = $this->db->prepare($this->query);
+
         array_walk_recursive($this->bindParams, function ($value, $bindParamKey) use (&$statement) {
             $param = is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR;
             $statement->bindValue($bindParamKey, $value, $param);
@@ -172,6 +183,7 @@ class QueryBuilder
             $last_id = $this->db->lastInsertId() - 1;
             return $this->returnData($last_id);
         }
+
         return null;
     }
 }
