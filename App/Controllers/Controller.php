@@ -2,8 +2,6 @@
 
 namespace App\Controllers;
 
-
-use App\Core\Authentication\Authentication;
 use App\Core\Database\QueryBuilder;
 use App\Core\Request\Request;
 use App\Core\Response\Response;
@@ -21,10 +19,8 @@ class Controller
 
     public function response(string $content, ?int $code = 200, ?array $headers = [])
     {
-
         return $this->response
             ->create($content, $code, $headers)
             ->send();
-
     }
 }
