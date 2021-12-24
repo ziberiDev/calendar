@@ -36,9 +36,9 @@ class EventController extends Controller
 
     public function update()
     {
-        /* if (!Session::get('user')) {
-             return $this->response("unauthenticated", 401);
-         }*/
+        if (!Session::get('user')) {
+            return $this->response("unauthenticated", 401);
+        }
         $this->request->validate([
             'title' => 'required',
             'description' => 'required',
@@ -65,6 +65,14 @@ class EventController extends Controller
 
     public function delete()
     {
-        ///
+        $validation = $this->request->validate([
+            'id' => 'required|exists:events'
+        ]);
+
+        if (!$validation->isValid()) {
+            return $this->response(json_encode($validation->getMessages()), 400);
+        }
+        $deleted = $this->db->delete('events')->where('id', '=', $this->request->getParams()->id)->execute();
+        var_dump($deleted);
     }
 }

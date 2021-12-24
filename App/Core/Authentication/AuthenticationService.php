@@ -5,12 +5,10 @@ namespace App\Core\Authentication;
 use App\Core\{Database\QueryBuilder, Helpers\Hash, Request\Request, Session\Session};
 use stdClass;
 
-trait Authentication
+class AuthenticationService
 {
-    /**
-     * @Inject
-     */
-    protected QueryBuilder $db;
+
+    public function __construct(protected QueryBuilder $db){}
 
     public function authenticate(Request $request)
     {
@@ -37,7 +35,7 @@ trait Authentication
         return null;
     }
 
-    private function performRegistration(Request $request)
+    public function performRegistration(Request $request)
     {
         $params = $request->getParams();
         $user = $this->db->insert('users', [

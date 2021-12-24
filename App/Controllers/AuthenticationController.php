@@ -2,12 +2,23 @@
 
 namespace App\Controllers;
 
-use App\{Core\Authentication\Authentication, Core\Helpers\Redirect, Core\Session\Session};
+use App\{Core\Authentication\AuthenticationService,
+    Core\CalendarService,
+    Core\Database\QueryBuilder,
+    Core\Helpers\Redirect,
+    Core\Request\Request,
+    Core\Response\Response,
+    Core\Session\Session,
+    Core\View\View};
 
 
 class AuthenticationController extends Controller
 {
-    use Authentication;
+
+    public function __construct(protected AuthenticationService $authentication, View $view, Request $request, QueryBuilder $db, Response $response)
+    {
+        parent::__construct($view, $db, $request, $response);
+    }
 
     public function index()
     {
@@ -34,7 +45,7 @@ class AuthenticationController extends Controller
             Session::flash('errors', $validation->getMessages());
             Redirect::to("login");
         }
-        if ($this->authenticate($this->request)) {
+        if ($this->authentication->authenticate($this->request)) {
             Redirect::to('/');
         }
         Session::flash('authError', ['Credentials dont mach']);
@@ -46,7 +57,7 @@ class AuthenticationController extends Controller
         //Check if user exists in session
         if (Session::get('user')) Redirect::to('/');
         $validation = $this->request->validate([
-            'email' => 'required|email|exists:users',
+            'email' => 'required|email|not_in:users',
             'password' => 'required|min:8|regex:^\S*(?=\S*[a-z])(?=\S*[A-Z])(?=\S*[\d])\S*$^',
             'name' => 'required|min:3|max:10',
             'last_name' => 'required|min:3|max:10'
@@ -54,7 +65,7 @@ class AuthenticationController extends Controller
 
         if (!$validation->isValid()) {
             Session::flash('errors', $validation->getMessages());
-        } elseif ($this->performRegistration($this->request)) {
+        } elseif ($this->authentication->performRegistration($this->request)) {
             Redirect::to('/');
         }
         Redirect::to('register');
