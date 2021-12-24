@@ -6,16 +6,16 @@
             <div class="col-4 mx-auto text-center my-3">
                 <span class="fw-bolder fs-4" x-text="`${year} ${month_string} ` "></span>
                 <div class="d-flex">
-                    <div @click="nextYear()" class="btn btn-secondary">Next Year</div>
                     <div @click="prevYear()" class="btn">Prev Year</div>
-                    <div @click="nextMonth()" class="btn btn-secondary">Next Month</div>
+                    <div @click="nextYear()" class="btn btn-secondary">Next Year</div>
                     <div @click="prevMonth()" class="btn">Prev Month</div>
+                    <div @click="nextMonth()" class="btn btn-secondary">Next Month</div>
                 </div>
             </div>
         </div>
         <div class="d-flex flex-wrap py-5">
             <template x-for="(calendarDay , index) in calendar">
-                <div @click="$dispatch('openmodal' , calendarDay.date)" @mouseover="calenderHoverIn($el)"
+                <div @click="$dispatch('openmodal' , calendarDay)" @mouseover="calenderHoverIn($el)"
                      @mouseleave="calendarHoverOut($el)"
                      class="calendarDay border border-3 overflow-hidden"
                      x-bind:class="(+index === day) ? 'bg-primary' : ''">
@@ -32,7 +32,7 @@
             </template>
         </div>
         {{-- Event Modal starts here --}}
-        <div @openmodal.window=" modal=true ; eventDate=$event.detail"
+        <div @openmodal.window=" modal=true ; eventDate=$event.detail.date"
              x-show="modal"
              class="row justify-content-center modalContainer position-absolute top-0 bottom-0 end-0 start-0">
             <div class="eventModal col-6 position-absolute top-50 start-50 translate-middle">
