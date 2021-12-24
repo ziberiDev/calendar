@@ -1,4 +1,4 @@
-window.openmodal = (date) => window.dispatchEvent(new CustomEvent('openmodal', {detail: date}))
+window.openmodal = (calendarEvent) => window.dispatchEvent(new CustomEvent('openmodal', {detail: calendarEvent}))
 
 window.calendar = () => {
     return {
@@ -30,7 +30,7 @@ window.calendar = () => {
         get_calendar() {
             axios.get('authUser/calendar', {
                 params: {
-                    date: `${this.year}-${this.month}`
+                    date: `${this.year}-${this.month < 10 ? '0' + this.month : this.month}`
                 }
             }).then(data => {
                 this.calendar = data.data.calendar
