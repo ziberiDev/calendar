@@ -2,7 +2,7 @@
 /vendor/
 /composer.lock
 .env
-/storage/
+/storage/error.log
 /cache
 /package-lock.json/
 /node_modules/

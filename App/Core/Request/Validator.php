@@ -6,13 +6,10 @@ use App\Core\Database\QueryBuilder;
 
 class Validator
 {
-
-
     /**
      * @var array $rules
      */
     protected array $rules = [];
-
 
     protected array|\stdClass $inputs;
 
@@ -21,9 +18,7 @@ class Validator
      */
     protected array $messages = [];
 
-    public function __construct(protected QueryBuilder $db)
-    {
-    }
+    public function __construct(protected QueryBuilder $db){}
 
     /**
      * @param array $rules
@@ -34,16 +29,24 @@ class Validator
         //TODO:ask about polymorphic call
         $this->inputs = $this->getParams();
 
+        // If inputs from request are empty set keys from rules
+        if (!$this->inputs) {
+            foreach ($rules as $key => $value) {
+                $this->inputs[$key] = "";
+            }
+        }
         $this->setRules($this->inputs, $rules);
-
         foreach ($this->inputs as $input => $inputValue) {
             if (!key_exists($input, $this->rules)) break;
             foreach ($this->rules[$input] as $method => $checkValue) {
-                $this->$method(
+                $continue = $this->$method(
                     inputValue: $inputValue,
                     input: $input,
                     checkValue: $checkValue
                 );
+                if (!$continue) {
+                    break;
+                }
             }
         }
         return $this;
@@ -83,22 +86,26 @@ class Validator
      * @param string|int $inputValue
      * @param string|int $checkValue
      * @param string $input
+     * @return bool
      */
-    protected function required(string|int $inputValue, string $input, string|int $checkValue = 0)
+    protected function required(string|int $inputValue, string $input, string|int $checkValue = 0): bool
     {
         if (!$inputValue) {
             $this->messages[$input][] = "The {$input} is required";
+            return false;
         }
+        return true;
     }
 
     /**
      * @param string|int $inputValue
      * @param string $input
      * @param string|int $checkValue
+     * @return bool
      */
-    protected function optional(string|int $inputValue, string $input, string|int $checkValue = 0)
+    protected function optional(string|int $inputValue, string $input, string|int $checkValue = 0): bool
     {
-        //
+        return true;
     }
 
     /**
@@ -106,12 +113,14 @@ class Validator
      * @param string|int $inputValue
      * @param string|int $checkValue
      * @param string $input
+     * @return bool
      */
-    protected function min(string|int $inputValue, string $input, string|int $checkValue = 0)
+    protected function min(string|int $inputValue, string $input, string|int $checkValue = 0): bool
     {
         if (!(strlen($inputValue) > (int)$checkValue)) {
             $this->messages[$input][] = "The {$input} must be greater than $checkValue";
         }
+        return true;
     }
 
     /**
@@ -119,12 +128,14 @@ class Validator
      * @param string|int $inputValue
      * @param string|int $checkValue
      * @param string $input
+     * @return bool
      */
-    protected function max(string|int $inputValue, string $input, string|int $checkValue = 0)
+    protected function max(string|int $inputValue, string $input, string|int $checkValue = 0): bool
     {
         if (!(strlen($inputValue) < (int)$checkValue)) {
             $this->messages[$input][] = "The {$input} cant be greater than $checkValue";
         }
+        return true;
     }
 
     /**
@@ -133,11 +144,12 @@ class Validator
      * @param string $input
      * @param string|int $checkValue
      */
-    public function email(string|int $inputValue, string $input, string|int $checkValue = 0)
+    public function email(string|int $inputValue, string $input, string|int $checkValue = 0): bool
     {
         if (!filter_var($inputValue, FILTER_VALIDATE_EMAIL)) {
             $this->messages[$input][] = "The {$input} must be a valid email";
         }
+        return true;
     }
 
     /**
@@ -145,25 +157,47 @@ class Validator
      * @param string $inputValue
      * @param string $input
      * @param string|int $checkValue
+     * @return bool
      */
-    public function regex(string $inputValue, string $input, string|int $checkValue = 0)
+    public function regex(string $inputValue, string $input, string|int $checkValue = 0): bool
     {
         if (!preg_match("$checkValue", $inputValue)) {
             $this->messages[$input][] = "The {$input} doesn't meet the requirements.";
         }
+        return true;
     }
 
     /**
+     * The rule states that the value must exist in database.
      * @param string $inputValue
      * @param string $input
      * @param string|int $checkValue
+     * @return bool
      */
-    public function exists(string $inputValue, string $input, string|int $checkValue = 0)
+    public function exists(string $inputValue, string $input, string|int $checkValue = 0): bool
+    {
+        $emails = $this->db->select($input)->from($checkValue)->where($input, '=', $inputValue)->get();
+        var_dump('Hello');
+        if (!$emails) {
+            $this->messages[$input][] = "The {$input} must exist.";
+        }
+        return true;
+    }
+
+    /**
+     * The rule states that the value can't exist i database.
+     * @param string $inputValue
+     * @param string $input
+     * @param string|int $checkValue
+     * @return bool
+     */
+    public function not_in(string $inputValue, string $input, string|int $checkValue = 0): bool
     {
         $emails = $this->db->select($input)->from($checkValue)->where($input, '=', $inputValue)->get();
         if ($emails) {
             $this->messages[$input][] = "The {$input} already exists.";
         }
+        return true;
     }
 
     /**

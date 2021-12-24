@@ -72,7 +72,7 @@ class Request extends Validator
 
     public function getParams()
     {
-        return $this->GET_PARAMS ?? $this->POST_PARAMS;
+        return $this->GET_PARAMS ?? $this->POST_PARAMS ?? [];
     }
 
 }
