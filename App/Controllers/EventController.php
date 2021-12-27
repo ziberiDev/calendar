@@ -19,19 +19,19 @@ class EventController extends Controller
             return $this->response("unauthenticated", 401);
         }
 
-        $this->request->validate([
+        $validation = $this->request->validate([
             'title' => 'required',
             'description' => 'required',
             'event_date' => 'required'
         ]);
 
-        if ($this->request->isValid()) {
+        if ($validation->isValid()) {
             $params = array_merge($this->request->all(), ['user_id' => Session::get('user')->id]);
             $this->db->insert('events', $params)->execute();
             return $this->response('Event Created');
         }
 
-        return $this->response(json_encode($this->request->getMessages()), 400);
+        return $this->response(json_encode($validation->getMessages()), 400);
     }
 
     public function update()
@@ -39,13 +39,14 @@ class EventController extends Controller
         if (!Session::get('user')) {
             return $this->response("unauthenticated", 401);
         }
-        $this->request->validate([
+        $validation = $this->request->validate([
+            'id' => 'required|exists:events',
             'title' => 'required',
             'description' => 'required',
             'event_date' => 'required'
         ]);
 
-        if ($this->request->isValid()) {
+        if ($validation->isValid()) {
             $request = $this->request->getParams();
 
             $this->db->update('events', [
@@ -53,15 +54,13 @@ class EventController extends Controller
                 'description' => $request->description,
                 'event_date' => $request->event_date
             ])
-                ->where('id', '=', $request->event_id)
+                ->where('id', '=', $request->id)
                 ->execute();
             return $this->response('Event Updated');
         }
 
-        return $this->response(json_encode($this->request->getMessages()), 400);
-
+        return $this->response(json_encode($validation->getMessages()), 400);
     }
-
 
     public function delete()
     {
@@ -72,7 +71,7 @@ class EventController extends Controller
         if (!$validation->isValid()) {
             return $this->response(json_encode($validation->getMessages()), 400);
         }
-        $deleted = $this->db->delete('events')->where('id', '=', $this->request->getParams()->id)->execute();
-        var_dump($deleted);
+        $this->db->delete('events')->where('id', '=', $this->request->getParams()->id)->execute();
+        return $this->response('Event Deleted', 200);
     }
 }

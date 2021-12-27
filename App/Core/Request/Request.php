@@ -6,7 +6,7 @@ use App\Core\Database\DBConnection;
 use App\Core\Database\QueryBuilder;
 use stdClass;
 
-class Request extends Validator
+class Request
 {
     public stdClass|null $GET_PARAMS;
 
@@ -14,13 +14,11 @@ class Request extends Validator
 
     protected stdClass $stdClass;
 
-    public function __construct(QueryBuilder $db)
+    public function __construct(protected Validator $validator)
     {
         $this->stdClass = new stdClass();
         $this->setGetParams();
         $this->setPostParams();
-        parent::__construct($db);
-
     }
 
     /**
@@ -75,4 +73,8 @@ class Request extends Validator
         return $this->GET_PARAMS ?? $this->POST_PARAMS ?? [];
     }
 
+    public function validate(array $rules)
+    {
+        return $this->validator->validate($rules, $this->getParams());
+    }
 }

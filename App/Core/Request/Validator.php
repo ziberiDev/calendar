@@ -18,16 +18,17 @@ class Validator
      */
     protected array $messages = [];
 
-    public function __construct(protected QueryBuilder $db){}
+    public function __construct(protected QueryBuilder $db)
+    {
+    }
 
     /**
      * @param array $rules
      * @return $this
      */
-    public function validate(array $rules): static
+    public function validate(array $rules, $requestInputs): static
     {
-        //TODO:ask about polymorphic call
-        $this->inputs = $this->getParams();
+        $this->inputs = $requestInputs;
 
         // If inputs from request are empty set keys from rules
         if (!$this->inputs) {
@@ -143,8 +144,9 @@ class Validator
      * @param string|int $inputValue
      * @param string $input
      * @param string|int $checkValue
+     * @return  bool
      */
-    public function email(string|int $inputValue, string $input, string|int $checkValue = 0): bool
+    protected function email(string|int $inputValue, string $input, string|int $checkValue = 0): bool
     {
         if (!filter_var($inputValue, FILTER_VALIDATE_EMAIL)) {
             $this->messages[$input][] = "The {$input} must be a valid email";
@@ -159,7 +161,7 @@ class Validator
      * @param string|int $checkValue
      * @return bool
      */
-    public function regex(string $inputValue, string $input, string|int $checkValue = 0): bool
+    protected function regex(string $inputValue, string $input, string|int $checkValue = 0): bool
     {
         if (!preg_match("$checkValue", $inputValue)) {
             $this->messages[$input][] = "The {$input} doesn't meet the requirements.";
@@ -174,7 +176,7 @@ class Validator
      * @param string|int $checkValue
      * @return bool
      */
-    public function exists(string $inputValue, string $input, string|int $checkValue = 0): bool
+    protected function exists(string $inputValue, string $input, string|int $checkValue = 0): bool
     {
         $emails = $this->db->select($input)->from($checkValue)->where($input, '=', $inputValue)->get();
         var_dump('Hello');
@@ -191,7 +193,7 @@ class Validator
      * @param string|int $checkValue
      * @return bool
      */
-    public function not_in(string $inputValue, string $input, string|int $checkValue = 0): bool
+    protected function not_in(string $inputValue, string $input, string|int $checkValue = 0): bool
     {
         $emails = $this->db->select($input)->from($checkValue)->where($input, '=', $inputValue)->get();
         if ($emails) {

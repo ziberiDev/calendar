@@ -9,7 +9,7 @@ module.exports = {
         publicPath: "/"
     },
     watchOptions: {
-        stdin: true
+        stdin: true,
     },
     module: {
         rules: [
