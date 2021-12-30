@@ -22,14 +22,14 @@ class AuthenticationController extends Controller
 
     public function index()
     {
-        return $this->view->renderView('auth.login', ['session' => Session::class]); //
+        return $this->view->render('auth.login', ['session' => Session::class]); //
     }
 
     public function registerForm()
     {
         //Check if user exists in session
         if (Session::get('user')) Redirect::to('/');
-        return $this->view->renderView('auth.register');
+        return $this->view->render('auth.register');
     }
 
     public function login()

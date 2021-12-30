@@ -16,11 +16,6 @@ use Faker\Factory as Faker;
 
 class DashboardController extends Controller
 {
-    public function __construct(protected CalendarService $calendar, View $view, Request $request, QueryBuilder $db, Response $response)
-    {
-        if (!Session::get('user')) Redirect::to('login');
-        parent::__construct($view, $db, $request, $response);
-    }
 
 
     public function test()
@@ -44,7 +39,6 @@ class DashboardController extends Controller
 
     public function index()
     {
-        return $this->view->renderView('dashboard.index');
+        return $this->view->render('dashboard.index');
     }
-
 }

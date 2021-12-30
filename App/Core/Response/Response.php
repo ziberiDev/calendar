@@ -7,7 +7,9 @@ use http\Exception;
 
 class Response
 {
-    protected array $headers = [];
+    protected array $headers = [
+
+    ];
 
     protected string|array $content;
 
@@ -58,7 +60,7 @@ class Response
     protected function sendHeaders()
     {
         foreach ($this->headers as $name => $value) {
-            header(sprintf('%s : %s', $name, $value), true, $this->response_code);
+            header(sprintf('%s : %s', $name, $value), true);
         }
     }
 

@@ -139,10 +139,10 @@ class QueryBuilder
     }
 
     /**
-     * @return Collection|string|array
+     * @return Collection|null
      * @throws \PDOException
      */
-    public function get(): Collection|string|array
+    public function get(): Collection|null
     {
         $statement = $this->db->prepare($this->query);
         array_walk_recursive($this->bindParams, function ($value, $bindParamKey) use (&$statement) {
@@ -151,10 +151,11 @@ class QueryBuilder
         });
         $statement->execute();
         $data = $statement->fetchAll(PDO::FETCH_CLASS);
+        //TODO update always return array or Collection
         if (count($data) >= 1) {
             return new Collection($data);
         }
-        return $data;
+        return null;
     }
 
     protected function returnData(int $last_table_id)

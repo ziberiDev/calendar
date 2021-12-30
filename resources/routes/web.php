@@ -1,20 +1,30 @@
 <?php
 
-use App\Controllers\{AuthenticationController, CalendarController, DashboardController, EventController};
+use App\Controllers\{
+    CalendarController,
+    DashboardController,
+    EventController,
+    UsersController
+};
 use App\Core\Router\Router;
 
 /** @var Router $router */
-$router->post("test" , controller: [DashboardController::class , 'test']);
+$router->post("test", controller: [DashboardController::class, 'test']);
 
-$router->get("", controller: [DashboardController::class, 'index']);
+$router->get("", controller: [DashboardController::class, 'index'], middleware: ['auth']);
 
-$router->get('authUser/calendar', controller: [CalendarController::class, 'authUserCalendar']);
+$router->get('authUser/calendar', controller: [CalendarController::class, 'userCalendar'], middleware: ['apiAuth']);
+
+$router->get('user', controller: [DashboardController::class, 'index']);
 
 $router->post('event/create', controller: [EventController::class, 'create']);
 
-$router->post('event/update', controller: [EventController::class, 'update']);
+$router->post('event/update', controller: [EventController::class, 'update'] , middleware: ['user_can_update_event']);
 
 $router->post('event/delete', controller: [EventController::class, 'delete']);
+
+$router->get('users', controller: [UsersController::class, 'index']);
 require_once 'auth.php';
+
 
 

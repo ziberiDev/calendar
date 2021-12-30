@@ -17,7 +17,7 @@ class View
         $this->blade = new Blade('./resources/views', 'cache');
     }
 
-    public function renderView($name, array $data = [])
+    public function render($name, array $data = [])
     {
         return $this->blade->render($name, $data);
     }

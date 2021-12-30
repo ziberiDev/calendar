@@ -24,7 +24,7 @@ class AuthenticationService
     protected function try(string $email, string $password): stdClass|null
     {
         $password = Hash::make($password);
-        $user = $this->db->select('id,name,last_name,email')->from('users')
+        $user = $this->db->select('id,name,last_name,email,role_id')->from('users')
             ->where('email', '=', $email)
             ->andWhere('password', '=', $password)
             ->get();

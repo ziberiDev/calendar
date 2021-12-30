@@ -22,7 +22,6 @@ try {
         ->direct(Request::uri(), Request::method());
 
 } catch (Exception $e) {
-
     $handler = new ExceptionHandler($e, new ExceptionLogger());
     $handler->handle();
 }

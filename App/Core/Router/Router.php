@@ -10,7 +10,9 @@ use App\Core\Exceptions\ControllerUndefinedMethodException;
 use App\Core\Exceptions\ResponseErrorException;
 use App\Core\Exceptions\RouteNotDefinedException;
 use App\Core\Request\Request;
+use App\Core\Session\Session;
 use App\Core\View\View;
+use App\Middleware\MiddlewareServiceProvider;
 use DI\Container;
 use DI\ContainerBuilder;
 use Exception;
@@ -41,17 +43,17 @@ class Router
         return $router;
     }
 
-    public function post($uri, array $controller)
+    public function post($uri, array $controller, ?array $middleware = [])
     {
         if (!key_exists($uri, $this->routes['POST'])) {
-            $this->routes['POST'][$uri] = $controller;
+            $this->routes['POST'][$uri] = array_merge($controller, $middleware);
         }
     }
 
-    public function get($uri, array $controller)
+    public function get($uri, array $controller, ?array $middleware = [])
     {
         if (!key_exists($uri, $this->routes['GET'])) {
-            $this->routes['GET'][$uri] = $controller;
+            $this->routes['GET'][$uri] = array_merge($controller, $middleware);
         }
     }
 
@@ -66,17 +68,22 @@ class Router
         if (!array_key_exists($uri, $this->routes[$requestType])) {
             throw new RouteNotDefinedException("$requestType request is not supported for route $uri");
         }
+
         return $this->callAction(...$this->routes[$requestType][$uri]);
     }
 
     /**
-     * @param  $controller
+     * @param $controller
      * @param $action
+     * @param ...$middleware
      * @return mixed
-     * @throws Exception
+     * @throws ControllerUndefinedMethodException
      */
-    protected function callAction($controller, $action): mixed
+    protected function callAction($controller, $action, ...$middleware): mixed
     {
+        /*var_dump($controller , $action , $middleware);*/
+        new MiddlewareServiceProvider($middleware);
+
 
         $controller = App::get($controller);
 
