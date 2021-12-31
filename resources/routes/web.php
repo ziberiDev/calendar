@@ -15,15 +15,14 @@ $router->get("", controller: [DashboardController::class, 'index'], middleware: 
 
 $router->get('authUser/calendar', controller: [CalendarController::class, 'userCalendar'], middleware: ['apiAuth']);
 
-$router->get('user', controller: [DashboardController::class, 'index']);
 
-$router->post('event/create', controller: [EventController::class, 'create']);
+$router->post('event/create', controller: [EventController::class, 'create'], middleware: ['apiAuth', 'user_can_create_event']);
 
-$router->post('event/update', controller: [EventController::class, 'update'] , middleware: ['user_can_update_event']);
+$router->post('event/update', controller: [EventController::class, 'update'], middleware: ['apiAuth', 'user_can_update_event']);
 
-$router->post('event/delete', controller: [EventController::class, 'delete']);
+$router->post('event/delete', controller: [EventController::class, 'delete'], middleware: ['apiAuth', 'user_can_update_event']);
 
-$router->get('users', controller: [UsersController::class, 'index']);
+$router->get('users', controller: [UsersController::class, 'index'], middleware: ['apiAuth']);
 require_once 'auth.php';
 
 

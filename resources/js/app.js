@@ -22,6 +22,7 @@ Alpine.store('modal', {
         data.append('title', this.eventTitle)
         data.append('description', this.eventDescription)
         data.append('event_date', this.eventTime ? this.eventDate + " " + this.eventTime : '')
+        data.append('user_id', Alpine.store('calendar').user ? Alpine.store('calendar').user.id : Alpine.store('calendar').user)
         axios.post('event/create', data).then(res => {
             Alpine.store('calendar').get_calendar()
             this.resetEventForm()
@@ -32,6 +33,7 @@ Alpine.store('modal', {
 
         let data = new FormData()
         data.append('id', this.eventId)
+        data.append('event_user_id', this.event_user_id)
         axios.post('event/delete', data)
             .then(res => {
                 Alpine.store('calendar').get_calendar()
@@ -46,6 +48,7 @@ Alpine.store('modal', {
         data.append('description', this.eventDescription)
         data.append('event_date', this.eventTime ? this.eventDate + " " + this.eventTime : '')
         data.append('id', this.eventId)
+        data.append('event_user_id', this.event_user_id)
         axios.post('event/update', data)
             .then(res => {
                 Alpine.store('calendar').get_calendar()

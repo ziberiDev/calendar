@@ -16,7 +16,13 @@ class Response
     protected int|string $response_code;
 
     private $errorResponseCodes = [
-        401
+        400,
+        401,
+        402,
+        403,
+        404,
+        405,
+        406
     ];
 
     public function create(string $content = '', ?int $code = 200, ?array $headers = [])

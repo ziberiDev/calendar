@@ -7,7 +7,7 @@ use App\Core\Router\Router;
 
 $router->get("login", controller: [AuthenticationController::class, 'index']);
 
-$router->get('logout', controller: [AuthenticationController::class, 'logout']);
+$router->get('logout', controller: [AuthenticationController::class, 'logout'] ,middleware: ['auth']);
 
 $router->post("login", controller: [AuthenticationController::class, 'login']);
 
