@@ -16,4 +16,12 @@ enum Role: int
         };
     }
 
+    public function canCreateUser()
+    {
+        return match ($this) {
+            self::Employee, self::Manager => false,
+            self::Admin => true
+        };
+    }
+
 }

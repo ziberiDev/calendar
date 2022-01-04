@@ -15,7 +15,6 @@ class CanUpdateUserEventMiddleware extends Middleware implements MiddlewareContr
         $params = $this->request->getParams();
 
         if (intval($params->event_user_id) !== Session::get('user')->id) {
-            echo 'Not my event';
             if (!Role::from(Session::get('user')->role_id)->canUpdate()) {
                return  $this->response('User has no permissions for this action', 403);
             };

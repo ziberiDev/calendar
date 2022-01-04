@@ -83,6 +83,7 @@ class QueryBuilder
      */
     public function where(string $column, string $operator, $value): self
     {
+        $this->bindParams = [];
         $this->query .= " WHERE `$column` $operator :$column ";
         $this->bindParams[][":$column"] = $value;
         return $this;
@@ -147,11 +148,12 @@ class QueryBuilder
         $statement = $this->db->prepare($this->query);
         array_walk_recursive($this->bindParams, function ($value, $bindParamKey) use (&$statement) {
             $param = is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR;
+
             $statement->bindValue($bindParamKey, $value, $param);
         });
+
         $statement->execute();
         $data = $statement->fetchAll(PDO::FETCH_CLASS);
-        //TODO update always return array or Collection
         if (count($data) >= 1) {
             return new Collection($data);
         }

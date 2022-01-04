@@ -178,9 +178,11 @@ class Validator
      */
     protected function exists(string $inputValue, string $input, string|int $checkValue = 0): bool
     {
-        $emails = $this->db->select($input)->from($checkValue)->where($input, '=', $inputValue)->get();
-        var_dump('Hello');
-        if (!$emails) {
+
+        $table = str_contains($checkValue, ',') ? explode(',', $checkValue)[0] : $checkValue;
+        $condition = str_contains($checkValue, ',') ? explode(',', $checkValue)[1] : $input;
+        $result = $this->db->select($condition)->from($table)->where($condition, '=', $inputValue)->get();
+        if (!$result) {
             $this->messages[$input][] = "The {$input} must exist.";
         }
         return true;

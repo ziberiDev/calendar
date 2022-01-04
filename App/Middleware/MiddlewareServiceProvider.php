@@ -10,7 +10,8 @@ class MiddlewareServiceProvider
         'apiAuth' => ApiAuthenticatedMiddleware::class,
         'isAdmin' => AdminMiddleware::class,
         'user_can_update_event' => CanUpdateUserEventMiddleware::class,
-        'user_can_create_event' => CanCreateUserEventMiddleware::class
+        'user_can_create_event' => CanCreateUserEventMiddleware::class,
+        'can_create_user' => CanCreateUserMiddleware::class,
     ];
 
     public function __construct(array $middlewares)

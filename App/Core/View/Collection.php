@@ -36,7 +36,7 @@ class Collection implements Iterator
         reset($this->items);
     }
 
-    public function toArray(?int $key)
+    public function toArray(?int $key = null)
     {
         return isset($key) ? $this->items[$key] : $this->items;
     }

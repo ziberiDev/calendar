@@ -15,18 +15,15 @@ class EventController extends Controller
 {
     public function create()
     {
-        if (!Session::get('user')) {
-            return $this->response("unauthenticated", 401);
-        }
-
         $validation = $this->request->validate([
             'title' => 'required',
             'description' => 'required',
             'event_date' => 'required'
         ]);
 
+
         if ($validation->isValid()) {
-            $params = array_merge($this->request->all(), ['user_id' => Session::get('user')->id]);
+            $params = array_merge($this->request->all(), ['user_id' => $this->request->getParams()->user_id == 'null' ? Session::get('user')->id : $this->request->getParams()->user_id]);
             $this->db->insert('events', $params)->execute();
             return $this->response('Event Created');
         }
