@@ -11,6 +11,8 @@ $router->get('logout', controller: [AuthenticationController::class, 'logout'] ,
 
 $router->post("login", controller: [AuthenticationController::class, 'login']);
 
+$router->get("loginwithfacebook", controller: [AuthenticationController::class, 'facebooklogin']);
+
 $router->get('register', controller: [AuthenticationController::class, 'registerForm']);
 
 $router->post('register', controller: [AuthenticationController::class, 'register']);

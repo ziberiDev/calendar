@@ -18,6 +18,9 @@
                     </a>
                     <ul class="dropdown-menu my-dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                         <li><a class="dropdown-item" href="/logout">Logout</a></li>
+                        <li class="dropdown-item"><span>Unused days for vacation </span><span
+                                                                          x-text="$store.calendar.user_vacation_days"></span>
+                        </li>
                     </ul>
                 </li>
                 <li class="nav-item dropdown">

@@ -13,6 +13,7 @@ import './createUser.js'
 import {getElement, getjQuery} from "bootstrap/js/src/util";
 
 console.log(getElement('.container').classList)
+
 axios.interceptors.response.use((response) => {
     console.log(response.status)
     if (response.status === 401) {

@@ -39,7 +39,6 @@
                                 @foreach($roles as $role)
                                     <option value="{{$role->id}}">{{$role->name}}</option>
                                 @endforeach
-                                <option value="6">New</option>
                             </select>
                         </div>
                         <div class="col-4  mb-3">

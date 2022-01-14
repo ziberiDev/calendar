@@ -9,7 +9,8 @@ use App\{Core\Authentication\AuthenticationService,
     Core\Request\Request,
     Core\Response\Response,
     Core\Session\Session,
-    Core\View\View};
+    Core\View\View
+};
 
 
 class AuthenticationController extends Controller
@@ -22,7 +23,7 @@ class AuthenticationController extends Controller
 
     public function index()
     {
-        return $this->view->render('auth.login', ['session' => Session::class]); //
+        return $this->view->render('auth.login', ['session' => Session::class, 'authFacebookUri' => $this->authentication->getFaceAuthUri()]); //
     }
 
     public function registerForm()
@@ -30,6 +31,20 @@ class AuthenticationController extends Controller
         //Check if user exists in session
         if (Session::get('user')) Redirect::to('/');
         return $this->view->render('auth.register');
+    }
+
+    public function facebooklogin()
+    {
+
+        if ($code = $this->request->getParams()->code) {
+
+            if ($this->authentication->authenticateWithFacebook($code)) {
+                Redirect::to('/');
+            };
+            Session::flash('authError', ["No such user exist email doesn't match"]);
+            Redirect::to('login');
+        }
+        Redirect::to('login');
     }
 
     public function login()

@@ -11,6 +11,8 @@
     "jenssegers/blade": "^1.4",
     "ext-calendar": "*",
     "php-di/php-di": "^6.3",
-    "fakerphp/faker": "^1.17"
+    "fakerphp/faker": "^1.17",
+    "league/oauth2-facebook": "^2.0",
+    "calendarific/php-calendarific": "^2.0"
   }
 }

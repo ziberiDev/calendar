@@ -19,12 +19,21 @@ class CalendarController extends Controller
             ->andWhere('event_date', "LIKE", "%{$this->request->getParams()->date}%")
             ->get();
 
+        $holidays = $this->db->select()->from('holidays')->where('date', "LIKE", "%{$this->request->getParams()->date}%")->get();
+
+        $user_vacations = $this->db->select()->from('user_vacations')
+            ->where('user_id', '=', $this->request->getParams()->id ?? Session::get('user')->id)
+            ->andWhere('start', 'LIKE', "{$this->request->getParams()->date}%")
+            ->andWhere('end', 'LIKE', "{$this->request->getParams()->date}%")
+            ->get();
+
+
         $this->calendar->initializeFromDate($this->request->getParams()->date);
         $this->calendar->renderDays();
         $this->calendar->setEvents($events ?? []);
-
-
-       return  $this->response($this->calendar->toJson());
+        $this->calendar->setHolidays($holidays ?? []);
+        $this->calendar->setVacationDays($user_vacations ?? []);
+        return $this->response($this->calendar->toJson());
 
     }
 

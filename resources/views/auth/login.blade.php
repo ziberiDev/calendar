@@ -51,8 +51,8 @@
                         <div class="col-4  mb-3">
                             <button type="submit" class="btn btn-primary">Login</button>
                         </div>
-                        <div class="col-8 text-end my-auto  mb-3">
-                            <a href="register"><small> Dont have an account yet? Please register here.</small></a>
+                        <div class="col-md-8 col-12 text-end my-auto  mb-3">
+                            <a href="{{$authFacebookUri}}" class="btn fb connect">Continue With Facebook</a>
                         </div>
                     </div>
                 </form>

@@ -1,5 +1,6 @@
 import Alpine from "alpinejs";
 import axios from "axios";
+
 Alpine.store('calendar', {
     Date: new Date(),
     day: null,
@@ -8,7 +9,9 @@ Alpine.store('calendar', {
     year: null,
     calendar: null,
     user: null,
-
+    user_vacation_days: 0,
+    vacation_start_date: '',
+    vacation_duration: '',
     //  ---METHODS---
     initialize() {
         this.day = this.Date.getDate()
@@ -22,7 +25,7 @@ Alpine.store('calendar', {
     calendarHoverOut($el) {
         $el.classList.remove('shadow')
     },
-    get_calendar() {
+    get_calendar: function () {
         axios.get('authUser/calendar', {
             params: {
                 date: `${this.year}-${this.month < 10 ? '0' + this.month : this.month}`,
@@ -31,8 +34,17 @@ Alpine.store('calendar', {
         }).then(data => {
             this.calendar = data.data.calendar
             this.month_string = data.data.month
+            this.user_vacation_days = data.data.user_vacation_days
             console.log(data)
         }).catch(err => console.log(err))
+    },
+    setVacation() {
+        let data = new FormData()
+        data.append('start_date', this.vacation_start_date)
+        data.append('duration', this.vacation_duration)
+        axios.post('vacation/create', data).then(res => {
+            this.get_calendar()
+        }).catch(err => console.log(err.response))
     },
 
     nextYear() {

@@ -3,13 +3,7 @@
 namespace App\Controllers;
 
 
-use App\{Core\Database\QueryBuilder,
-    Core\Helpers\Redirect,
-    Core\Request\Request,
-    Core\Response\Response,
-    Core\Session\Session,
-    Core\View\View
-};
+use App\Core\Session\Session;
 
 class EventController extends Controller
 {
@@ -20,7 +14,6 @@ class EventController extends Controller
             'description' => 'required',
             'event_date' => 'required'
         ]);
-
 
         if ($validation->isValid()) {
             $params = array_merge($this->request->all(), ['user_id' => $this->request->getParams()->user_id == 'null' ? Session::get('user')->id : $this->request->getParams()->user_id]);

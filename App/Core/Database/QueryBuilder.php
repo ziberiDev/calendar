@@ -41,6 +41,7 @@ class QueryBuilder
 
         $this->setBindParams($data);
         $this->setUpdateValues();
+
         return $this;
     }
 
@@ -83,7 +84,7 @@ class QueryBuilder
      */
     public function where(string $column, string $operator, $value): self
     {
-        $this->bindParams = [];
+
         $this->query .= " WHERE `$column` $operator :$column ";
         $this->bindParams[][":$column"] = $value;
         return $this;
@@ -106,7 +107,7 @@ class QueryBuilder
 
     protected function setBindParams(array $data)
     {
-        $this->bindParams = [];
+
         $is_multi_arr = count($data) !== count($data, COUNT_RECURSIVE);
 
         if ($is_multi_arr) {
@@ -155,8 +156,10 @@ class QueryBuilder
         $statement->execute();
         $data = $statement->fetchAll(PDO::FETCH_CLASS);
         if (count($data) >= 1) {
+            $this->bindParams = [];
             return new Collection($data);
         }
+        $this->bindParams = [];
         return null;
     }
 
@@ -170,13 +173,13 @@ class QueryBuilder
                 $data[$key][preg_replace("/[0-9.:]/", '', $k)] = $val;
             });
         }
+        $this->bindParams = [];
         return $data;
     }
 
     public function execute()
     {
         $statement = $this->db->prepare($this->query);
-
         array_walk_recursive($this->bindParams, function ($value, $bindParamKey) use (&$statement) {
             $param = is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR;
             $statement->bindValue($bindParamKey, $value, $param);
