@@ -1,0 +1,17 @@
+Options +FollowSymLinks -Indexes
+<Files ".env">
+   Order Deny,allow
+   Deny from all
+</Files>
+<Files "error.log">
+   Order Deny,allow
+   Deny from all
+</Files>
+<IfModule  mod_rewrite.c>
+RewriteEngine On
+RewriteCond %{HTTP:Authorization} .
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^ index.php [L]
+</IfModule>
