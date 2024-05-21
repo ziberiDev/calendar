@@ -2,8 +2,10 @@
 /vendor/
 /composer.lock
 .env
-/storage/error.log
+/storage/*
+!/storage/.gitkeep
 /cache
 /package-lock.json/
 /node_modules/
 /public/js/app.js
+
